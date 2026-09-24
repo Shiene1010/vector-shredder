@@ -1,118 +1,109 @@
 :root {
-    --bg-color: #0b0f17;
-    --card-bg: #121824;
-    --border-color: #242f41;
-    --neon-green: #00ff66;
-    --neon-blue: #00e5ff;
-    --neon-orange: #ff9900;
-    --neon-red: #ff3366;
-    --text-main: #e2e8f0;
-    --text-muted: #64748b;
+    --pixel-bg: #212529;
+    --pixel-card: #343a40;
+    --pixel-border: #495057;
+    --arcade-green: #2bf06c;
+    --arcade-blue: #2be0f0;
+    --arcade-yellow: #f0db2b;
+    --arcade-red: #ff4a4a;
+    --pixel-white: #f8f9fa;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif;
+    /* 고전 게임 특유의 각진 폰트 느낌 재현 */
+    font-family: 'Impact', 'Arial Black', -apple-system, sans-serif;
     user-select: none;
     -webkit-user-select: none;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
+    background-color: var(--pixel-bg);
+    color: var(--pixel-white);
     overflow: hidden;
     width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 12px;
 }
 
 /* ==========================================
-   1. Status Cards Layout (Top UI Matrix)
+   1. 2D 아케이드 상단 전광판 (Status Bar)
    ========================================== */
 .status-bar {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    margin-bottom: 10px;
-    z-index: 10;
+    margin-bottom: 12px;
 }
 
 .status-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative;
+    background: var(--pixel-card);
+    border: 4px solid var(--pixel-border);
+    /* 픽셀 느낌을 주기 위한 가구조 경계 */
+    box-shadow: inset -2px -2px 0px #1a1d20, inset 2px 2px 0px #4e555d;
+    border-radius: 4px;
+    padding: 8px 6px;
+    text-align: center;
 }
 
 .status-card.alert {
-    border-color: var(--neon-red);
-    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
-    animation: flashBorder 1.5s infinite alternate;
+    border-color: var(--arcade-red);
+    animation: arcadeFlash 0.6s infinite alternate;
 }
 
-@keyframes flashBorder {
-    0% { border-color: var(--border-color); }
-    100% { border-color: var(--neon-red); }
+@keyframes arcadeFlash {
+    0% { box-shadow: 0 0 10px rgba(255, 74, 74, 0.6); }
+    100% { box-shadow: 0 0 0px rgba(255, 74, 74, 0); }
 }
 
 .card-header {
     font-size: 11px;
-    font-weight: bold;
-    color: var(--text-main);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 3px;
+    color: var(--arcade-yellow);
     letter-spacing: 0.5px;
-}
-
-.metric-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 0px #000;
 }
 
 .metric-item {
+    margin-top: 4px;
     display: flex;
     flex-direction: column;
 }
 
 .metric-label {
     font-size: 8px;
-    color: var(--text-muted);
-    text-transform: uppercase;
+    color: #adb5bd;
 }
 
 .metric-value {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
+    text-shadow: 2px 2px 0px #000;
 }
 
-/* Card Specific Accent Colors */
-.layer-1 .v1 { color: var(--neon-orange); }
-.layer-1 .v2 { color: var(--neon-green); }
-.layer-2 .v1 { color: var(--neon-green); }
-.layer-2 .v2 { color: var(--neon-orange); }
-.layer-3 .v1 { color: var(--neon-blue); }
-.layer-3 .v2 { color: var(--neon-green); }
+.layer-1 .v1 { color: var(--arcade-red); }
+.layer-1 .v2 { color: var(--arcade-red); }
+.layer-2 .v1 { color: var(--arcade-blue); }
+.layer-2 .v2 { color: var(--arcade-yellow); }
+.layer-3 .v1 { color: #ff8800; }
+.layer-3 .v2 { color: var(--arcade-green); }
 
 /* ==========================================
-   2. Simulation Canvas (Center Isometric View)
+   2. 2D 미니 맵 전광판 (Center Map Canvas)
    ========================================== */
 .canvas-container {
     flex: 1;
     position: relative;
-    background: radial-gradient(circle at center, #161f30 0%, #0b0f17 100%);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    background: #111;
+    border: 4px solid #fff;
+    box-shadow: 0px 4px 0px #000;
+    border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 canvas {
@@ -125,185 +116,171 @@ canvas {
 
 .canvas-overlay-tag {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 6px;
+    left: 6px;
     font-size: 9px;
-    background: rgba(0,0,0,0.6);
-    padding: 3px 6px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    color: var(--neon-blue);
-    pointer-events: none;
+    background: var(--arcade-red);
+    color: #fff;
+    padding: 2px 6px;
+    font-weight: bold;
+    border: 2px solid #000;
+    box-shadow: 1px 1px 0px #000;
 }
 
 /* ==========================================
-   3. Control Dashboard (Lower Modular Systems)
+   3. 클래식 타이쿤 하단 조작 패널 (Control)
    ========================================== */
 .control-dashboard {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    background: var(--pixel-card);
+    border: 4px solid var(--pixel-border);
+    box-shadow: inset -2px -2px 0px #1a1d20, inset 2px 2px 0px #4e555d;
+    border-radius: 4px;
     padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    z-index: 10;
 }
 
-/* Main Action Row: Shredder + Hyper Velocity Gauge */
+/* 메인 파쇄 버튼 및 가동 에너지 바 */
 .action-row {
     display: grid;
-    grid-template-columns: 1.8fr 1fr;
-    gap: 12px;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
     align-items: center;
 }
 
-/* Semantic Shredder Modular Neon Button */
+/* 복고풍 오락실 느낌의 왕버튼 */
 .shredder-btn {
     width: 100%;
-    height: 64px;
-    background: transparent;
-    border: 2px solid var(--neon-green);
-    color: var(--neon-green);
-    border-radius: 6px;
+    height: 56px;
+    background: #ff4a4a;
+    border: 4px solid #fff;
+    border-radius: 8px;
+    color: #fff;
     font-size: 16px;
     font-weight: bold;
-    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 0px #000;
+    box-shadow: 0px 4px 0px #b32d2d, 0px 6px 10px rgba(0,0,0,0.5);
     cursor: pointer;
-    box-shadow: inset 0 0 10px rgba(0, 255, 102, 0.1), 0 0 15px rgba(0, 255, 102, 0.1);
-    transition: all 0.1s ease;
     outline: none;
     touch-action: manipulation;
 }
 
 .shredder-btn:active, .shredder-btn.active {
-    background: rgba(0, 255, 102, 0.15);
-    box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.3), 0 0 25px rgba(0, 255, 102, 0.4);
-    transform: scale(0.98);
+    transform: translateY(4px);
+    box-shadow: 0px 0px 0px #b32d2d;
+    background: #cc3b3b;
 }
 
-/* Energy Gauge Module */
+/* 에너지 게이지바 계량기 스타일 */
 .energy-gauge {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+}
+
+.gauge-bar-bg {
+    width: 100%;
+    height: 24px;
+    background: #000;
+    border: 2px solid #fff;
+    padding: 2px;
     position: relative;
 }
 
-.gauge-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: conic-gradient(var(--neon-orange) 0% 45%, #1a2333 45% 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 0 10px rgba(255, 153, 0, 0.2);
+.gauge-bar-fill {
+    width: 45%;
+    height: 100%;
+    background: var(--arcade-yellow);
+    transition: width 0.1s ease;
 }
 
-.gauge-circle::after {
-    content: '';
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    background: var(--card-bg);
-    border-radius: 50%;
+.gauge-label {
+    font-size: 9px;
+    color: var(--arcade-yellow);
+    margin-top: 4px;
+    text-shadow: 1px 1px 0px #000;
 }
 
-.gauge-text {
-    position: absolute;
-    font-size: 8px;
-    font-weight: bold;
-    color: var(--neon-orange);
-    z-index: 2;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Persistent Systems Sub-Grid: Upgrades & ZKP Box */
+/* 하단 장비 업그레이드 슬롯 및 영수증 쿠폰 */
 .persistent-grid {
     display: grid;
-    grid-template-columns: 1.8fr 1fr;
-    gap: 12px;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
 }
 
-/* 3-Divided Upgrade Slots */
 .upgrade-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 4px;
 }
 
 .upgrade-slot {
-    background: #0b0f17;
-    border: 1px solid var(--border-color);
+    background: #212529;
+    border: 2px solid var(--pixel-border);
     border-radius: 4px;
-    padding: 6px 4px;
+    padding: 6px 2px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
-    font-size: 8px;
-    color: var(--text-muted);
-    text-align: center;
+    justify-content: center;
 }
 
 .upgrade-slot .slot-title {
-    color: var(--text-main);
+    color: #fff;
     font-size: 9px;
-    font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .upgrade-slot .slot-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.4;
+    font-size: 16px;
     margin: 2px 0;
 }
 
-/* Anonymous Wallet Layout with QR Code Preview */
+.upgrade-slot .slot-btn {
+    font-size: 7px;
+    background: var(--pixel-border);
+    color: #fff;
+    padding: 1px 4px;
+    border: 1px solid #fff;
+    border-radius: 2px;
+}
+
+/* 도트식 비밀 지갑 상자 */
 .anonymous-wallet {
-    background: #0b0f17;
-    border: 1px dashed var(--neon-green);
+    background: #000;
+    border: 2px solid var(--arcade-green);
     border-radius: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    position: relative;
+    padding: 4px;
 }
 
 .qr-container {
-    width: 44px;
-    height: 44px;
-    background: #ffffff;
+    width: 40px;
+    height: 40px;
+    background: #fff;
     padding: 2px;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 1px;
     opacity: 0.2;
-    transition: opacity 0.5s ease;
 }
 
 .qr-pixel {
-    background: #0b0f17;
+    background: #000;
 }
 
 .anonymous-wallet.active .qr-container {
-    opacity: 0.9;
-    box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+    opacity: 1;
 }
 
 .wallet-footer-label {
     font-size: 7px;
-    color: var(--neon-green);
-    margin-top: 4px;
+    color: var(--arcade-green);
+    margin-top: 3px;
     font-weight: bold;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
 }

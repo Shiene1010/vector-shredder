@@ -3,112 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vector Tycoon: The Harmony Grid</title>
-    <!-- 와이어프레임 네온 테마 스타일시트 연결 -->
+    <title>커피 배달 타이쿤 (Rush-Hour Prototype)</title>
+    <!-- 아케이드 2D 클래식 테마 스타일시트 연결 -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LAYER 1: StatusBar (3 Divided Top Cards Layout) -->
+    <!-- LAYER 1: StatusBar (오락실 전광판 스타일 스탯 모니터) -->
     <div class="status-bar">
-        <!-- Card 1: LOCAL SYSTEM -->
+        <!-- Card 1: 동네 민심 (Local 상태) -->
         <div class="status-card layer-1 alert" id="card-l1">
-            <div class="card-header">1. LOCAL</div>
+            <div class="card-header">⭐ 동네 민심</div>
             <div class="metric-group">
                 <div class="metric-item">
-                    <span class="metric-label">Merchant Sanity</span>
+                    <span class="metric-label">커피숍 멘탈</span>
                     <span class="metric-value v1" id="m-sanity">24%</span>
                 </div>
                 <div class="metric-item">
-                    <span class="metric-label">Pedestrian Safety</span>
+                    <span class="metric-label">인도 배달사고율</span>
                     <span class="metric-value v2" id="m-safety">45%</span>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2: ECOSYSTEM SYSTEM -->
+        <!-- Card 2: 가게 단골 생태계 -->
         <div class="status-card layer-2" id="card-l2">
-            <div class="card-header">2. ECOSYSTEM</div>
+            <div class="card-header">👥 손님 상태</div>
             <div class="metric-group">
                 <div class="metric-item">
-                    <span class="metric-label">Privacy Shield</span>
+                    <span class="metric-label">리뷰 보안쉴드</span>
                     <span class="metric-value v1" id="m-shield">55%</span>
                 </div>
                 <div class="metric-item">
-                    <span class="metric-label">Customer Loyalty</span>
+                    <span class="metric-label">단골 손님 수</span>
                     <span class="metric-value v2" id="m-loyalty">310</span>
                 </div>
             </div>
         </div>
 
-        <!-- Card 3: PLATFORM TREASURY -->
+        <!-- Card 3: 카페 정산 금고 -->
         <div class="status-card layer-3" id="card-l3">
-            <div class="card-header">3. PLATFORM</div>
+            <div class="card-header">💰 카페 금고</div>
             <div class="metric-group">
                 <div class="metric-item">
-                    <span class="metric-label">System Overhead</span>
+                    <span class="metric-label">소음 분쟁비용</span>
                     <span class="metric-value v1" id="m-overhead">8%</span>
                 </div>
                 <div class="metric-item">
-                    <span class="metric-label">Synergy Dividend</span>
+                    <span class="metric-label">누적 시너지 수익</span>
                     <span class="metric-value v2" id="m-dividend">$0</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LAYER 2: SimulationCanvas (Center Isometric Grid Window) -->
+    <!-- LAYER 2: SimulationCanvas (2D 미니 맵 윈도우) -->
     <div class="canvas-container">
-        <div class="canvas-overlay-tag">SYS//: ISOMETRIC HARMONY GRID RUNNING</div>
+        <div class="canvas-overlay-tag">🚨 RUSH HOUR CHAOS</div>
         <canvas id="simCanvas"></canvas>
     </div>
 
-    <!-- LAYER 3: ControlDashboard (Lower Interaction Zone) -->
+    <!-- LAYER 3: ControlDashboard (하단 2D 아케이드 조작 패널) -->
     <div class="control-dashboard">
-        <!-- Main Action Module Row -->
+        <!-- 메인 액션 버튼 & 에너지 바 레이아웃 -->
         <div class="action-row">
-            <!-- Modular Glowing Button: SEMANTIC SHREDDER -->
-            <button class="shredder-btn" id="shredderBtn">SEMANTIC SHREDDER</button>
+            <!-- 2D 고전 게임 스타일 왕버튼 -->
+            <button class="shredder-btn" id="shredderBtn">텍스트 파쇄 (HOLD)</button>
             
-            <!-- Hyper-Velocity Energy Gauge Component -->
+            <!-- 직관적인 게이지 계량기 바 -->
             <div class="energy-gauge">
-                <div class="gauge-circle" id="energyGauge">
-                    <span class="gauge-text">ENERGY</span>
+                <div class="gauge-bar-bg">
+                    <div class="gauge-bar-fill" id="energyBarFill"></div>
                 </div>
+                <span class="gauge-label">ENERGY</span>
             </div>
         </div>
 
-        <!-- Persistent Navigation Sub-Grid Section -->
+        <!-- 하단 영수증 및 상점 인프라 그리드 -->
         <div class="persistent-grid">
-            <!-- 3 Divided Tactical Upgrade Slots -->
+            <!-- 3분할 클래식 업그레이드 슬롯 -->
             <div class="upgrade-container">
                 <div class="upgrade-slot">
-                    <span class="slot-title">Coffee</span>
-                    <!-- CSS Placeholder Icon Block -->
+                    <span class="slot-title">커피머신</span>
                     <div class="slot-icon">☕</div>
-                    <span>Upgrade</span>
+                    <span class="slot-btn">LV.1</span>
                 </div>
                 <div class="upgrade-slot">
-                    <span class="slot-title">Rider</span>
+                    <span class="slot-title">배달 오토바이</span>
                     <div class="slot-icon">🛵</div>
-                    <span>Upgrade</span>
+                    <span class="slot-btn">LV.1</span>
                 </div>
                 <div class="upgrade-slot">
-                    <span class="slot-title">Customer</span>
+                    <span class="slot-title">인도 안전구역</span>
                     <div class="slot-icon">👤</div>
-                    <span>Infrastructure</span>
+                    <span class="slot-btn">INFRA</span>
                 </div>
             </div>
             
-            <!-- Anonymous Wallet (ZKP Crypto Coupon QR Preview) -->
+            <!-- 보상 수령 전광판 (비밀 쿠폰 영수증 상자) -->
             <div class="anonymous-wallet" id="anonymousWallet">
                 <div class="qr-container" id="qrContainer"></div>
-                <div class="wallet-footer-label" id="walletLabel">2GP Coupon Ready</div>
+                <div class="wallet-footer-label" id="walletLabel">쿠폰 준비중</div>
             </div>
         </div>
     </div>
 
-    <!-- 와이어프레임 컴포넌트 구동 스크립트 연결 -->
+    <!-- 2D 클래식 런타임 스크립트 연결 -->
     <script src="script.js"></script>
 </body>
 </html>
