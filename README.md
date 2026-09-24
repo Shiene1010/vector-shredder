@@ -18,6 +18,12 @@ python -m http.server 8000
 # then open http://localhost:8000
 ```
 
+## Live demo
+
+The project is also deployed via GitHub Pages:
+
+- Live site: https://shiene1010.github.io/vector-shredder/
+
 ## License
 
 MIT — see LICENSE (not included).
