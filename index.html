@@ -1,114 +1,113 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>커피 배달 타이쿤 (Rush-Hour Prototype)</title>
-    <!-- 아케이드 2D 클래식 테마 스타일시트 연결 -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vector Tycoon: Platform Monitoring Center</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LAYER 1: StatusBar (오락실 전광판 스타일 스탯 모니터) -->
-    <div class="status-bar">
-        <!-- Card 1: 동네 민심 (Local 상태) -->
-        <div class="status-card layer-1 alert" id="card-l1">
-            <div class="card-header">⭐ 동네 민심</div>
-            <div class="metric-group">
-                <div class="metric-item">
-                    <span class="metric-label">커피숍 멘탈</span>
-                    <span class="metric-value v1" id="m-sanity">24%</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">인도 배달사고율</span>
-                    <span class="metric-value v2" id="m-safety">45%</span>
-                </div>
-            </div>
-        </div>
+  <div class="phone-wrapper">
+    <!-- 2D 픽셀 파티클 레이어 -->
+    <canvas id="shred-canvas"></canvas>
 
-        <!-- Card 2: 가게 단골 생태계 -->
-        <div class="status-card layer-2" id="card-l2">
-            <div class="card-header">👥 손님 상태</div>
-            <div class="metric-group">
-                <div class="metric-item">
-                    <span class="metric-label">리뷰 보안쉴드</span>
-                    <span class="metric-value v1" id="m-shield">55%</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">단골 손님 수</span>
-                    <span class="metric-value v2" id="m-loyalty">310</span>
-                </div>
-            </div>
+    <!-- 1. TOP HUD SECTION (상단 전광판) -->
+    <div class="top-hud">
+      <div class="hud-panel red-alert">
+        <div class="hud-title">★ 동네 민심</div>
+        <div class="hud-value" id="stat-mental">24%</div>
+        <div class="hud-sub">
+          <span>인도 배달사고율</span>
+          <span id="stat-accident" style="color: var(--neon-red); font-weight: bold;">45%</span>
         </div>
-
-        <!-- Card 3: 카페 정산 금고 -->
-        <div class="status-card layer-3" id="card-l3">
-            <div class="card-header">💰 카페 금고</div>
-            <div class="metric-group">
-                <div class="metric-item">
-                    <span class="metric-label">소음 분쟁비용</span>
-                    <span class="metric-value v1" id="m-overhead">8%</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">누적 시너지 수익</span>
-                    <span class="metric-value v2" id="m-dividend">$0</span>
-                </div>
-            </div>
+      </div>
+      <div class="hud-panel blue-alert">
+        <div class="hud-title">👥 손님 상태</div>
+        <div class="hud-value" id="stat-shield">55%</div>
+        <div class="hud-sub">
+          <span>단골 손님 수</span>
+          <span id="stat-customers" style="color: var(--neon-blue); font-weight: bold;">310</span>
         </div>
+      </div>
+      <div class="hud-panel green-alert">
+        <div class="hud-title">💰 카페 금고</div>
+        <div class="hud-value" id="stat-noise">8%</div>
+        <div class="hud-sub">
+          <span>누적 시너지 수익</span>
+          <span id="stat-revenue" style="color: var(--neon-green); font-weight: bold;">$0</span>
+        </div>
+      </div>
     </div>
 
-    <!-- LAYER 2: SimulationCanvas (2D 미니 맵 윈도우) -->
-    <div class="canvas-container">
-        <div class="canvas-overlay-tag">🚨 RUSH HOUR CHAOS</div>
-        <canvas id="simCanvas"></canvas>
-    </div>
-
-    <!-- LAYER 3: ControlDashboard (하단 2D 아케이드 조작 패널) -->
-    <div class="control-dashboard">
-        <!-- 메인 액션 버튼 & 에너지 바 레이아웃 -->
-        <div class="action-row">
-            <!-- 2D 고전 게임 스타일 왕버튼 -->
-            <button class="shredder-btn" id="shredderBtn">텍스트 파쇄 (HOLD)</button>
-            
-            <!-- 직관적인 게이지 계량기 바 -->
-            <div class="energy-gauge">
-                <div class="gauge-bar-bg">
-                    <div class="gauge-bar-fill" id="energyBarFill"></div>
-                </div>
-                <span class="gauge-label">ENERGY</span>
-            </div>
+    <!-- 2. CENTER AREA (중앙 스플릿 스크린) -->
+    <div class="center-area">
+      <!-- 좌측: 관제 그리드 맵 -->
+      <div class="map-container" id="map-frame">
+        <svg class="vector-svg" id="vector-svg-routes"></svg>
+        
+        <div class="map-node" style="top: 30%; left: 35%;">
+          🏠<span class="label">단골집</span>
+        </div>
+        <div class="map-node" style="top: 55%; left: 25%;">
+          ☕<span class="label">카페 본점</span>
         </div>
 
-        <!-- 하단 영수증 및 상점 인프라 그리드 -->
-        <div class="persistent-grid">
-            <!-- 3분할 클래식 업그레이드 슬롯 -->
-            <div class="upgrade-container">
-                <div class="upgrade-slot">
-                    <span class="slot-title">커피머신</span>
-                    <div class="slot-icon">☕</div>
-                    <span class="slot-btn">LV.1</span>
-                </div>
-                <div class="upgrade-slot">
-                    <span class="slot-title">배달 오토바이</span>
-                    <div class="slot-icon">🛵</div>
-                    <span class="slot-btn">LV.1</span>
-                </div>
-                <div class="upgrade-slot">
-                    <span class="slot-title">인도 안전구역</span>
-                    <div class="slot-icon">👤</div>
-                    <span class="slot-btn">INFRA</span>
-                </div>
-            </div>
-            
-            <!-- 보상 수령 전광판 (비밀 쿠폰 영수증 상자) -->
-            <div class="anonymous-wallet" id="anonymousWallet">
-                <div class="qr-container" id="qrContainer"></div>
-                <div class="wallet-footer-label" id="walletLabel">쿠폰 준비중</div>
-            </div>
-        </div>
+        <!-- 동적 에이전트(라이더, 보행자) 풀 -->
+        <div id="dynamic-agents"></div>
+      </div>
+
+      <!-- 우측: 이슈 로그 터미널 -->
+      <div class="terminal-container">
+        <div class="terminal-header">🤖 ISSUE LOG TERMINAL</div>
+        <div class="log-stream" id="log-stream-box"></div>
+      </div>
     </div>
 
-    <!-- 2D 클래식 런타임 스크립트 연결 -->
-    <script src="script.js"></script>
+    <!-- 3. BOTTOM CONTROL PANEL (하단 제어 컴포넌트) -->
+    <div class="bottom-control">
+      <div class="shred-btn-container">
+        <button class="shred-btn" id="btn-shred">텍스트 파쇄 [HOLD]</button>
+      </div>
+
+      <!-- 회복 에너지 바 -->
+      <div class="energy-box">
+        <div class="energy-label">⚙️ CRITICAL RECOVERY ENERGY</div>
+        <div class="energy-bar-bg">
+          <div class="energy-bar-fill" id="energy-fill"></div>
+        </div>
+      </div>
+
+      <!-- 인프라 업그레이드 & 영수증 슬롯 -->
+      <div class="bottom-row">
+        <div class="upgrade-grid">
+          <button class="btn-upgrade">
+            <span class="icon">☕</span>
+            <span>커피머신</span>
+            <span class="lv">Lv.1</span>
+          </button>
+          <button class="btn-upgrade">
+            <span class="icon">🛵</span>
+            <span>배달오토바이</span>
+            <span class="lv">Lv.1</span>
+          </button>
+          <button class="btn-upgrade">
+            <span class="icon">🛣️</span>
+            <span>인도안전구역</span>
+            <span class="lv">INFRA</span>
+          </button>
+        </div>
+
+        <!-- 영지식 증명 쿠폰 지갑 -->
+        <div class="zkp-receipt-box" id="zkp-box">
+          <div class="zkp-title">ZKP WALLET</div>
+          <div class="zkp-status" id="zkp-text">쿠폰 준비중</div>
+          <div style="font-size: 5px; color: #aaa; font-family: monospace; transform: scale(0.95); margin-top: 2px;">HASH:0x7F4C...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

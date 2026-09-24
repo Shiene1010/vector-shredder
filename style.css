@@ -1,286 +1,367 @@
 :root {
-    --pixel-bg: #212529;
-    --pixel-card: #343a40;
-    --pixel-border: #495057;
-    --arcade-green: #2bf06c;
-    --arcade-blue: #2be0f0;
-    --arcade-yellow: #f0db2b;
-    --arcade-red: #ff4a4a;
-    --pixel-white: #f8f9fa;
+  --bg-terminal: #0a0b0d;
+  --bg-panel: #141619;
+  --bg-panel-inner: #1a1d21;
+  --neon-red: #FF3B30;
+  --neon-yellow: #FFCC00;
+  --neon-green: #34C759;
+  --neon-blue: #00A3FF;
+  --border-color: #2c3138;
+  --text-muted: #6c7a89;
+  --font-family: 'Courier New', Courier, monospace;
 }
 
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    /* 고전 게임 특유의 각진 폰트 느낌 재현 */
-    font-family: 'Impact', 'Arial Black', -apple-system, sans-serif;
-    user-select: none;
-    -webkit-user-select: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body {
-    background-color: var(--pixel-bg);
-    color: var(--pixel-white);
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 12px;
+  background-color: #000;
+  color: #fff;
+  font-family: var(--font-family);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-/* ==========================================
-   1. 2D 아케이드 상단 전광판 (Status Bar)
-   ========================================== */
-.status-bar {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
+/* 모바일 9:16 프레임 가상화 */
+.phone-wrapper {
+  width: 100vw;
+  height: 100vh;
+  max-width: 430px;
+  max-height: 932px;
+  background-color: var(--bg-terminal);
+  border: 4px solid var(--border-color);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
 }
 
-.status-card {
-    background: var(--pixel-card);
-    border: 4px solid var(--pixel-border);
-    /* 픽셀 느낌을 주기 위한 가구조 경계 */
-    box-shadow: inset -2px -2px 0px #1a1d20, inset 2px 2px 0px #4e555d;
-    border-radius: 4px;
-    padding: 8px 6px;
-    text-align: center;
+/* 1. TOP HUD SECTION */
+.top-hud {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 12px;
+  background-color: var(--bg-panel);
+  border-bottom: 2px solid var(--border-color);
+  z-index: 10;
 }
 
-.status-card.alert {
-    border-color: var(--arcade-red);
-    animation: arcadeFlash 0.6s infinite alternate;
+.hud-panel {
+  background-color: var(--bg-panel-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 10px;
 }
 
-@keyframes arcadeFlash {
-    0% { box-shadow: 0 0 10px rgba(255, 74, 74, 0.6); }
-    100% { box-shadow: 0 0 0px rgba(255, 74, 74, 0); }
+.hud-panel.red-alert { border-color: var(--neon-red); }
+.hud-panel.blue-alert { border-color: var(--neon-blue); }
+.hud-panel.green-alert { border-color: var(--neon-green); }
+
+.hud-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.red-alert .hud-title { color: var(--neon-red); }
+.blue-alert .hud-title { color: var(--neon-blue); }
+.green-alert .hud-title { color: var(--neon-green); }
+
+.hud-value {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 2px 0;
+}
+.red-alert .hud-value { color: var(--neon-red); text-shadow: 0 0 4px rgba(255,59,48,0.4); }
+.blue-alert .hud-value { color: var(--neon-blue); text-shadow: 0 0 4px rgba(0,163,255,0.4); }
+.green-alert .hud-value { color: var(--neon-green); text-shadow: 0 0 4px rgba(52,199,89,0.4); }
+
+.hud-sub {
+  color: var(--text-muted);
+  font-size: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
-.card-header {
-    font-size: 11px;
-    color: var(--arcade-yellow);
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-    text-shadow: 1px 1px 0px #000;
+/* 2. CENTER AREA (SPLIT SCREEN) */
+.center-area {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  background-color: #050608;
+  position: relative;
+  overflow: hidden;
 }
 
-.metric-item {
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
+/* GRID MAP CONTAINER */
+.map-container {
+  position: relative;
+  border-right: 1px solid var(--border-color);
+  background-image: 
+    linear-gradient(rgba(44, 49, 56, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 49, 56, 0.15) 1px, transparent 1px);
+  background-size: 15px 15px;
+  overflow: hidden;
 }
 
-.metric-label {
-    font-size: 8px;
-    color: #adb5bd;
+/* MAP ELEMENTS */
+.map-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  text-align: center;
+  z-index: 2;
+}
+.map-node .label {
+  font-size: 7px;
+  background: rgba(0,0,0,0.7);
+  padding: 1px 3px;
+  border-radius: 3px;
+  white-space: nowrap;
+  display: block;
+  margin-top: 2px;
+  border: 1px solid var(--border-color);
 }
 
-.metric-value {
-    font-size: 16px;
-    font-weight: bold;
-    text-shadow: 2px 2px 0px #000;
+.rider-agent {
+  position: absolute;
+  font-size: 14px;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  transition: all 0.3s linear;
+  filter: drop-shadow(0 0 3px var(--neon-yellow));
 }
 
-.layer-1 .v1 { color: var(--arcade-red); }
-.layer-1 .v2 { color: var(--arcade-red); }
-.layer-2 .v1 { color: var(--arcade-blue); }
-.layer-2 .v2 { color: var(--arcade-yellow); }
-.layer-3 .v1 { color: #ff8800; }
-.layer-3 .v2 { color: var(--arcade-green); }
-
-/* ==========================================
-   2. 2D 미니 맵 전광판 (Center Map Canvas)
-   ========================================== */
-.canvas-container {
-    flex: 1;
-    position: relative;
-    background: #111;
-    border: 4px solid #fff;
-    box-shadow: 0px 4px 0px #000;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 12px;
+.citizen-agent {
+  position: absolute;
+  font-size: 11px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  transition: all 0.5s linear;
+  opacity: 0.8;
 }
 
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+/* VECTOR PATH LINES */
+.vector-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.canvas-overlay-tag {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    font-size: 9px;
-    background: var(--arcade-red);
-    color: #fff;
-    padding: 2px 6px;
-    font-weight: bold;
-    border: 2px solid #000;
-    box-shadow: 1px 1px 0px #000;
+/* POPUP TEXT OVER MAP */
+.conflict-bubble {
+  position: absolute;
+  color: var(--neon-red);
+  font-size: 7px;
+  background: rgba(10, 11, 13, 0.9);
+  border: 1px solid var(--neon-red);
+  padding: 2px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 5;
+  animation: floatUp 1.2s ease-out forwards;
+  font-weight: bold;
 }
 
-/* ==========================================
-   3. 클래식 타이쿤 하단 조작 패널 (Control)
-   ========================================== */
-.control-dashboard {
-    background: var(--pixel-card);
-    border: 4px solid var(--pixel-border);
-    box-shadow: inset -2px -2px 0px #1a1d20, inset 2px 2px 0px #4e555d;
-    border-radius: 4px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* TERMINAL LOG STREAM */
+.terminal-container {
+  background-color: #030405;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  font-size: 8px;
+  line-height: 1.2;
+}
+.terminal-header {
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+.log-stream {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  overflow-y: hidden;
+}
+.log-line {
+  word-break: break-all;
+  white-space: pre-wrap;
+  animation: fadeInLog 0.2s ease-out forwards;
+}
+.log-line.error { color: var(--neon-red); font-weight: bold; }
+.log-line.warn { color: var(--neon-yellow); }
+.log-line.info { color: var(--text-muted); }
+.log-line.success { color: var(--neon-green); }
+
+/* 3. BOTTOM CONTROL PANEL */
+.bottom-control {
+  background-color: var(--bg-panel);
+  border-top: 2px solid var(--border-color);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
 }
 
-/* 메인 파쇄 버튼 및 가동 에너지 바 */
-.action-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 10px;
-    align-items: center;
+.shred-btn-container {
+  position: relative;
 }
 
-/* 복고풍 오락실 느낌의 왕버튼 */
-.shredder-btn {
-    width: 100%;
-    height: 56px;
-    background: #ff4a4a;
-    border: 4px solid #fff;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    text-shadow: 2px 2px 0px #000;
-    box-shadow: 0px 4px 0px #b32d2d, 0px 6px 10px rgba(0,0,0,0.5);
-    cursor: pointer;
-    outline: none;
-    touch-action: manipulation;
+.shred-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #cc2e25 0%, #a61c15 100%);
+  border: 2px solid var(--neon-red);
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 900;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 #73100a;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  transition: none;
+  letter-spacing: 1px;
 }
 
-.shredder-btn:active, .shredder-btn.active {
-    transform: translateY(4px);
-    box-shadow: 0px 0px 0px #b32d2d;
-    background: #cc3b3b;
+.shred-btn:active, .shred-btn.holding {
+  background: #a61c15;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+  transform: translateY(4px);
 }
 
-/* 에너지 게이지바 계량기 스타일 */
-.energy-gauge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* ENERGY PROGRESS BAR */
+.energy-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.energy-label {
+  font-size: 8px;
+  color: var(--neon-yellow);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+.energy-bar-bg {
+  background-color: var(--bg-panel-inner);
+  border: 1px solid var(--border-color);
+  height: 12px;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.energy-bar-fill {
+  background: linear-gradient(90deg, #cc9900 0%, var(--neon-yellow) 100%);
+  width: 45%;
+  height: 100%;
+  box-shadow: 0 0 8px var(--neon-yellow);
+  transition: width 0.1s linear;
 }
 
-.gauge-bar-bg {
-    width: 100%;
-    height: 24px;
-    background: #000;
-    border: 2px solid #fff;
-    padding: 2px;
-    position: relative;
+/* UTILITY UPGRADE ROW & ZKP WALLET CONTAINER */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 75px;
+  gap: 8px;
+  align-items: center;
 }
 
-.gauge-bar-fill {
-    width: 45%;
-    height: 100%;
-    background: var(--arcade-yellow);
-    transition: width 0.1s ease;
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.btn-upgrade {
+  background-color: var(--bg-panel-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 2px;
+  font-family: var(--font-family);
+  color: #fff;
+  font-size: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+.btn-upgrade .icon { font-size: 10px; }
+.btn-upgrade .lv { color: var(--neon-yellow); font-weight: bold; }
+
+/* ZKP WALLET SLIP MOCKUP */
+.zkp-receipt-box {
+  background: #fafafa;
+  color: #111;
+  font-family: monospace;
+  font-size: 7px;
+  padding: 4px;
+  border-radius: 2px;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.5);
+  border-top: 2px dashed #999;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  height: 34px;
+  overflow: hidden;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+.zkp-receipt-box.ready {
+  opacity: 1;
+  transform: translateY(-2px);
+  border-top-color: var(--neon-green);
+  box-shadow: 0 0 8px rgba(52,199,89,0.5);
+}
+.zkp-title { font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 1px; text-transform: uppercase; font-size: 6px;}
+.zkp-status { color: #555; font-weight: bold; }
+.zkp-receipt-box.ready .zkp-status { color: var(--neon-green); }
+
+/* PARTICLE SHREDDING OVERLAY CANVAS */
+#shred-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
 }
 
-.gauge-label {
-    font-size: 9px;
-    color: var(--arcade-yellow);
-    margin-top: 4px;
-    text-shadow: 1px 1px 0px #000;
+/* KEYFRAMES */
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -25px); }
 }
-
-/* 하단 장비 업그레이드 슬롯 및 영수증 쿠폰 */
-.persistent-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 10px;
-}
-
-.upgrade-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-}
-
-.upgrade-slot {
-    background: #212529;
-    border: 2px solid var(--pixel-border);
-    border-radius: 4px;
-    padding: 6px 2px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.upgrade-slot .slot-title {
-    color: #fff;
-    font-size: 9px;
-    margin-bottom: 2px;
-}
-
-.upgrade-slot .slot-icon {
-    font-size: 16px;
-    margin: 2px 0;
-}
-
-.upgrade-slot .slot-btn {
-    font-size: 7px;
-    background: var(--pixel-border);
-    color: #fff;
-    padding: 1px 4px;
-    border: 1px solid #fff;
-    border-radius: 2px;
-}
-
-/* 도트식 비밀 지갑 상자 */
-.anonymous-wallet {
-    background: #000;
-    border: 2px solid var(--arcade-green);
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-}
-
-.qr-container {
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    padding: 2px;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 1px;
-    opacity: 0.2;
-}
-
-.qr-pixel {
-    background: #000;
-}
-
-.anonymous-wallet.active .qr-container {
-    opacity: 1;
-}
-
-.wallet-footer-label {
-    font-size: 7px;
-    color: var(--arcade-green);
-    margin-top: 3px;
-    font-weight: bold;
+@keyframes fadeInLog {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
