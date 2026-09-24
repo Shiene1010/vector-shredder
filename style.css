@@ -1,13 +1,12 @@
 :root {
-  --bg-terminal: #0a0b0d;
-  --bg-panel: #141619;
-  --bg-panel-inner: #1a1d21;
+  --bg-terminal: #07080a;
+  --bg-panel: #111317;
+  --bg-panel-inner: #1a1d22;
   --neon-red: #FF3B30;
   --neon-yellow: #FFCC00;
   --neon-green: #34C759;
   --neon-blue: #00A3FF;
-  --border-color: #2c3138;
-  --text-muted: #6c7a89;
+  --border-color: #242930;
   --font-family: 'Courier New', Courier, monospace;
 }
 
@@ -30,7 +29,7 @@ body {
   overflow: hidden;
 }
 
-/* 모바일 9:16 프레임 가상화 */
+/* 9:16 메인프레임 디바이스 프레임 정의 및 가시성 인프라 안착 */
 .phone-wrapper {
   width: 100vw;
   height: 100vh;
@@ -43,10 +42,22 @@ body {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
 }
 
-/* 1. TOP HUD SECTION */
+/* 인도배달사고율 폭등 시 미니 모터웨이식 사이버 비네팅 경고 맥박 레이어 */
+.phone-wrapper.critical-alert {
+  animation: alertPulse 1.5s infinite alternate;
+  border-color: var(--neon-red);
+}
+
+/* 벡터 공간 완전 정화 안정화 시 올 그린 광원 전환 테두리 */
+.phone-wrapper.stabilized {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 30px rgba(52, 199, 89, 0.4), inset 0 0 20px rgba(52, 199, 89, 0.2);
+}
+
+/* 1. TOP SEMANTIC HUD (최상단 데이터 퀀트 대시보드) */
 .top-hud {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -54,18 +65,16 @@ body {
   padding: 12px;
   background-color: var(--bg-panel);
   border-bottom: 2px solid var(--border-color);
-  z-index: 10;
+  z-index: 30; /* 캔버스 입자 및 흐름 레이어보다 위로 정렬 */
 }
 
 .hud-panel {
   background-color: var(--bg-panel-inner);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 8px 6px;
+  padding: 8px 4px;
   text-align: center;
-  font-size: 10px;
 }
-
 .hud-panel.red-alert { border-color: var(--neon-red); }
 .hud-panel.blue-alert { border-color: var(--neon-blue); }
 .hud-panel.green-alert { border-color: var(--neon-green); }
@@ -73,170 +82,186 @@ body {
 .hud-title {
   font-size: 9px;
   font-weight: bold;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  white-space: nowrap;
+  margin-bottom: 2px;
 }
 .red-alert .hud-title { color: var(--neon-red); }
 .blue-alert .hud-title { color: var(--neon-blue); }
 .green-alert .hud-title { color: var(--neon-green); }
 
 .hud-value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
-  margin: 2px 0;
 }
-.red-alert .hud-value { color: var(--neon-red); text-shadow: 0 0 4px rgba(255,59,48,0.4); }
-.blue-alert .hud-value { color: var(--neon-blue); text-shadow: 0 0 4px rgba(0,163,255,0.4); }
-.green-alert .hud-value { color: var(--neon-green); text-shadow: 0 0 4px rgba(52,199,89,0.4); }
+.red-alert .hud-value { color: var(--neon-red); text-shadow: 0 0 6px rgba(255,59,48,0.5); }
+.blue-alert .hud-value { color: var(--neon-blue); text-shadow: 0 0 6px rgba(0,163,255,0.5); }
+.green-alert .hud-value { color: var(--neon-green); text-shadow: 0 0 6px rgba(52,199,89,0.5); }
 
 .hud-sub {
-  color: var(--text-muted);
-  font-size: 8px;
+  color: #586270;
+  font-size: 7px;
+  margin-top: 3px;
+}
+
+/* 2. FULLSCREEN GRID VIEWPORT (통합 관제 시뮬레이터 공간) */
+.viewport-area {
+  flex: 1;
+  position: relative;
+  background-image: 
+    linear-gradient(rgba(36, 41, 48, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 41, 48, 0.2) 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: hidden;
+}
+
+/* 3단계 파이프라인 관제 컨베이어 벨트 라인 */
+.pipeline-belt {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  height: 40px;
+  border-top: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  z-index: 5;
+}
+
+.belt-station {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  justify-content: center;
+  align-items: center;
+  font-size: 8px;
+  color: #586270;
+  border-right: 1px dashed rgba(36, 41, 48, 0.4);
+  background-color: rgba(7, 8, 10, 0.4);
+}
+.belt-station:last-child { border-right: none; }
+.belt-station.active { color: var(--neon-blue); font-weight: bold; }
+
+/* 미니 모터웨이 감성의 실시간 동적 링 인디케이터 */
+.pulse-ring {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--neon-blue);
+  border-radius: 50%;
+  margin-bottom: 2px;
+  animation: ringPulse 1.5s infinite linear;
 }
 
-/* 2. CENTER AREA (SPLIT SCREEN) */
-.center-area {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 55% 45%;
-  background-color: #050608;
-  position: relative;
-  overflow: hidden;
-}
-
-/* GRID MAP CONTAINER */
-.map-container {
-  position: relative;
-  border-right: 1px solid var(--border-color);
-  background-image: 
-    linear-gradient(rgba(44, 49, 56, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(44, 49, 56, 0.15) 1px, transparent 1px);
-  background-size: 15px 15px;
-  overflow: hidden;
-}
-
-/* MAP ELEMENTS */
-.map-node {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  font-size: 12px;
-  text-align: center;
-  z-index: 2;
-}
-.map-node .label {
-  font-size: 7px;
-  background: rgba(0,0,0,0.7);
-  padding: 1px 3px;
-  border-radius: 3px;
-  white-space: nowrap;
-  display: block;
-  margin-top: 2px;
-  border: 1px solid var(--border-color);
-}
-
-.rider-agent {
+/* 에이전트(라이더 🛵) 주행 노드 가시성 패치 */
+.rider-node {
   position: absolute;
   font-size: 14px;
   transform: translate(-50%, -50%);
-  z-index: 4;
-  transition: all 0.3s linear;
-  filter: drop-shadow(0 0 3px var(--neon-yellow));
+  z-index: 10;
+  filter: drop-shadow(0 0 4px var(--neon-yellow));
+  transition: all 0.1s linear;
 }
 
-.citizen-agent {
+/* 4대 오염 데이터 카드 스택 컨테이너 브래킷 */
+.cards-overlay {
   position: absolute;
-  font-size: 11px;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  transition: all 0.5s linear;
-  opacity: 0.8;
-}
-
-/* VECTOR PATH LINES */
-.vector-svg {
-  position: absolute;
-  top: 0;
+  top: 25%;
   left: 0;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* POPUP TEXT OVER MAP */
-.conflict-bubble {
-  position: absolute;
-  color: var(--neon-red);
-  font-size: 7px;
-  background: rgba(10, 11, 13, 0.9);
-  border: 1px solid var(--neon-red);
-  padding: 2px 4px;
-  border-radius: 4px;
-  pointer-events: none;
-  z-index: 5;
-  animation: floatUp 1.2s ease-out forwards;
-  font-weight: bold;
-}
-
-/* TERMINAL LOG STREAM */
-.terminal-container {
-  background-color: #030405;
-  padding: 6px;
+  height: 48%;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
-  font-size: 8px;
-  line-height: 1.2;
+  gap: 8px;
+  padding: 0 16px;
+  z-index: 15; /* 캔버스 바로 아래에서 터치 인터랙션을 받음 */
 }
-.terminal-header {
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 4px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
+
+.pollution-card {
+  background: linear-gradient(135deg, rgba(20, 10, 10, 0.95) 0%, rgba(7, 8, 10, 0.98) 100%);
+  border: 1px solid var(--neon-red);
+  border-radius: 6px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 0 8px rgba(255,59,48,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: cardFadeIn 0.3s ease-out forwards;
+}
+
+/* 파쇄 흡입 작동 시 보셀 결함 분해 직전의 고속 진동 마찰 스킨 효과 */
+.pollution-card.shredding-glitch {
+  animation: cardShake 0.08s infinite alternate;
+  border-color: var(--neon-yellow);
+  opacity: 0.7;
+}
+
+.card-tag {
+  font-size: 7.5px;
   font-weight: bold;
+  background-color: rgba(255, 59, 48, 0.22);
+  color: var(--neon-red);
+  padding: 1px 5px;
+  border-radius: 3px;
+  width: fit-content;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+.pollution-card.shredding-glitch .card-tag {
+  background-color: rgba(255, 204, 0, 0.25);
+  color: var(--neon-yellow);
+}
+
+.card-msg {
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1.3;
+  color: #fff;
+  word-break: keep-all;
+}
+
+/* 반투명 미니멀 메인프레임 시스템 로그 터미널 모듈 */
+.terminal-overlay {
+  position: absolute;
+  bottom: 2%;
+  left: 4%;
+  width: 92%;
+  height: 22%;
+  background-color: rgba(3, 4, 5, 0.75);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
 .log-stream {
   flex: 1;
   display: flex;
   flex-direction: column-reverse;
   gap: 4px;
-  overflow-y: hidden;
+  overflow: hidden;
+  font-size: 7.5px;
+  line-height: 1.2;
 }
-.log-line {
-  word-break: break-all;
-  white-space: pre-wrap;
-  animation: fadeInLog 0.2s ease-out forwards;
-}
+.log-line { color: #586270; }
 .log-line.error { color: var(--neon-red); font-weight: bold; }
-.log-line.warn { color: var(--neon-yellow); }
-.log-line.info { color: var(--text-muted); }
-.log-line.success { color: var(--neon-green); }
+.log-line.success { color: var(--neon-green); font-weight: bold; }
 
-/* 3. BOTTOM CONTROL PANEL */
-.bottom-control {
+/* 3. SOLID BOTTOM CONTROL CONSOLE (최하단 물리 제어 판넬 랙) */
+.bottom-console {
   background-color: var(--bg-panel);
-  border-top: 2px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  z-index: 10;
+  z-index: 30; /* 대시보드와 동급 최상단 계층으로 터치 가시성 완전 개방 */
 }
 
-.shred-btn-container {
-  position: relative;
-}
-
-.shred-btn {
+.shred-trigger {
   width: 100%;
-  background: linear-gradient(180deg, #cc2e25 0%, #a61c15 100%);
-  border: 2px solid var(--neon-red);
+  background: linear-gradient(180deg, #cc2e25 0%, #911610 100%);
+  border: 1px solid var(--neon-red);
   border-radius: 8px;
   color: #fff;
   font-family: var(--font-family);
@@ -245,106 +270,97 @@ body {
   padding: 16px;
   text-align: center;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 #73100a;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-  transition: none;
-  letter-spacing: 1px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 #5c0d09;
+  letter-spacing: 0.5px;
 }
 
-.shred-btn:active, .shred-btn.holding {
-  background: #a61c15;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-  transform: translateY(4px);
+.shred-trigger:active, .shred-trigger.absorbing {
+  background: #911610;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+  transform: translateY(3px);
 }
 
-/* ENERGY PROGRESS BAR */
-.energy-box {
+.energy-rail {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
-.energy-label {
+.energy-text {
   font-size: 8px;
   color: var(--neon-yellow);
   font-weight: bold;
-  letter-spacing: 0.5px;
 }
 .energy-bar-bg {
-  background-color: var(--bg-panel-inner);
+  background-color: #07080a;
   border: 1px solid var(--border-color);
-  height: 12px;
-  border-radius: 3px;
+  height: 10px;
+  border-radius: 2px;
   overflow: hidden;
-  position: relative;
 }
 .energy-bar-fill {
-  background: linear-gradient(90deg, #cc9900 0%, var(--neon-yellow) 100%);
+  background: linear-gradient(90deg, #b38600 0%, var(--neon-yellow) 100%);
   width: 45%;
   height: 100%;
-  box-shadow: 0 0 8px var(--neon-yellow);
-  transition: width 0.1s linear;
+  box-shadow: 0 0 6px var(--neon-yellow);
+  transition: width 0.1s ease;
 }
 
-/* UTILITY UPGRADE ROW & ZKP WALLET CONTAINER */
-.bottom-row {
+.console-footer {
   display: grid;
   grid-template-columns: 1fr 75px;
   gap: 8px;
   align-items: center;
 }
 
-.upgrade-grid {
+.infra-group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
 }
-.btn-upgrade {
-  background-color: var(--bg-panel-inner);
+.btn-infra {
+  background-color: #1a1d22;
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  padding: 4px 2px;
+  padding: 6px 2px;
   font-family: var(--font-family);
   color: #fff;
   font-size: 7px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   cursor: pointer;
 }
-.btn-upgrade .icon { font-size: 10px; }
-.btn-upgrade .lv { color: var(--neon-yellow); font-weight: bold; }
+.btn-infra .icon { font-size: 9px; }
+.btn-infra .status { color: var(--neon-yellow); font-weight: bold; }
 
-/* ZKP WALLET SLIP MOCKUP */
-.zkp-receipt-box {
-  background: #fafafa;
+.zkp-wallet-slip {
+  background: #f5f5f5;
   color: #111;
   font-family: monospace;
   font-size: 7px;
   padding: 4px;
   border-radius: 2px;
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.5);
-  border-top: 2px dashed #999;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.6);
+  border-top: 2px dashed #888;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  position: relative;
-  height: 34px;
-  overflow: hidden;
-  opacity: 0.5;
-  transition: all 0.3s ease;
+  justify-content: center;
+  height: 32px;
+  opacity: 0.2;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.zkp-receipt-box.ready {
+.zkp-wallet-slip.active {
   opacity: 1;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-top-color: var(--neon-green);
-  box-shadow: 0 0 8px rgba(52,199,89,0.5);
+  box-shadow: 0 0 12px rgba(52,199,89,0.6);
 }
-.zkp-title { font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 1px; text-transform: uppercase; font-size: 6px;}
-.zkp-status { color: #555; font-weight: bold; }
-.zkp-receipt-box.ready .zkp-status { color: var(--neon-green); }
+.zkp-title { font-weight: bold; font-size: 6px; border-bottom: 1px solid #ddd; margin-bottom: 2px; text-transform: uppercase;}
+.zkp-value { font-weight: bold; color: #555; }
+.zkp-wallet-slip.active .zkp-value { color: var(--neon-green); }
 
-/* PARTICLE SHREDDING OVERLAY CANVAS */
+/* 입자 소용돌이 흡입 캔버스 오버레이 전용 계층 설계 */
 #shred-canvas {
   position: absolute;
   top: 0;
@@ -352,16 +368,23 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 20;
+  z-index: 20; /* 에이전트와 카드 위에 그려지고 컨트롤 콘솔 아래로 포지셔닝 */
 }
 
-/* KEYFRAMES */
-@keyframes floatUp {
-  0% { opacity: 0; transform: translate(-50%, 0); }
-  15% { opacity: 1; }
-  100% { opacity: 0; transform: translate(-50%, -25px); }
+/* ANIMATION KEYFRAMES */
+@keyframes alertPulse {
+  0% { box-shadow: inset 0 0 10px rgba(255,59,48,0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.9); }
+  100% { box-shadow: inset 0 0 35px rgba(255,59,48,0.55), 0 25px 50px -12px rgba(255,59,48,0.2); }
 }
-@keyframes fadeInLog {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes ringPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cardShake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  100% { transform: translate(-1px, -1px) rotate(0.4deg); }
 }

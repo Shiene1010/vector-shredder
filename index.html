@@ -8,104 +8,117 @@
 </head>
 <body>
 
-  <div class="phone-wrapper">
-    <!-- 2D 픽셀 파티클 레이어 -->
+  <!-- 메인 관제 프레임 (사고율 폭등 시 critical-alert 클래스 동적 부여) -->
+  <div class="phone-wrapper" id="main-container">
+    
+    <!-- 보셀 입자가 소용돌이치며 흡입되는 2D 벡터 이펙트용 캔버스 (Z-Index: 20) -->
     <canvas id="shred-canvas"></canvas>
 
-    <!-- 1. TOP HUD SECTION (상단 전광판) -->
+    <!-- 1. TOP SEMANTIC HUD (실시간 시스템 전광판 스탯 대시보드) -->
     <div class="top-hud">
       <div class="hud-panel red-alert">
         <div class="hud-title">★ 동네 민심</div>
         <div class="hud-value" id="stat-mental">24%</div>
         <div class="hud-sub">
-          <span>인도 배달사고율</span>
-          <span id="stat-accident" style="color: var(--neon-red); font-weight: bold;">45%</span>
+          인도 배달사고율 <span id="stat-accident" style="color: var(--neon-red); font-weight: bold;">45%</span>
         </div>
       </div>
+      
       <div class="hud-panel blue-alert">
         <div class="hud-title">👥 손님 상태</div>
         <div class="hud-value" id="stat-shield">55%</div>
         <div class="hud-sub">
-          <span>단골 손님 수</span>
-          <span id="stat-customers" style="color: var(--neon-blue); font-weight: bold;">310</span>
+          단골 손님 수 <span id="stat-customers" style="color: var(--neon-blue); font-weight: bold;">310</span>
         </div>
       </div>
+      
       <div class="hud-panel green-alert">
         <div class="hud-title">💰 카페 금고</div>
         <div class="hud-value" id="stat-noise">8%</div>
         <div class="hud-sub">
-          <span>누적 시너지 수익</span>
-          <span id="stat-revenue" style="color: var(--neon-green); font-weight: bold;">$0</span>
+          시너지 수익 <span id="stat-revenue" style="color: var(--neon-green); font-weight: bold;">$0</span>
         </div>
       </div>
     </div>
 
-    <!-- 2. CENTER AREA (중앙 스플릿 스크린) -->
-    <div class="center-area">
-      <!-- 좌측: 관제 그리드 맵 -->
-      <div class="map-container" id="map-frame">
-        <svg class="vector-svg" id="vector-svg-routes"></svg>
-        
-        <div class="map-node" style="top: 30%; left: 35%;">
-          🏠<span class="label">단골집</span>
+    <!-- 2. FULLSCREEN GRID VIEWPORT (중앙 통합 관제 시뮬레이터 공간) -->
+    <div class="viewport-area" id="viewport-frame">
+      
+      <!-- 3단계 파이프라인 관제 컨베이어 벨트 레일 (오염 침투 시 맥박 링 애니메이션) -->
+      <div class="pipeline-belt">
+        <div class="belt-station active" id="station-ingest">
+          <div class="pulse-ring"></div>
+          <span>주문 접수부</span>
         </div>
-        <div class="map-node" style="top: 55%; left: 25%;">
-          ☕<span class="label">카페 본점</span>
+        <div class="belt-station" id="station-brew">
+          <div class="pulse-ring" style="animation-delay: 0.5s;"></div>
+          <span>카페 제조부</span>
         </div>
-
-        <!-- 동적 에이전트(라이더, 보행자) 풀 -->
-        <div id="dynamic-agents"></div>
+        <div class="belt-station" id="station-dispatch">
+          <div class="pulse-ring" style="animation-delay: 1s;"></div>
+          <span>라이더 배달부</span>
+        </div>
       </div>
 
-      <!-- 우측: 이슈 로그 터미널 -->
-      <div class="terminal-container">
-        <div class="terminal-header">🤖 ISSUE LOG TERMINAL</div>
+      <!-- 물리 엔진 공간을 주행하는 실시간 라이더 노드 에이전트 풀 -->
+      <div id="rider-agents-pool"></div>
+
+      <!-- 4대 오염 데이터 카드(갑질주문, 악질업주, 보도주행, 악평리뷰) 실시간 브래킷 오버레이 -->
+      <div class="cards-overlay" id="pollution-cards-container"></div>
+
+      <!-- 반투명 미니멀 메인프레임 시스템 로그 터미널 인터페이스 -->
+      <div class="terminal-overlay">
         <div class="log-stream" id="log-stream-box"></div>
       </div>
+
     </div>
 
-    <!-- 3. BOTTOM CONTROL PANEL (하단 제어 컴포넌트) -->
-    <div class="bottom-control">
+    <!-- 3. SOLID BOTTOM CONTROL CONSOLE (하단 제어 콘솔 기기 패널) -->
+    <div class="bottom-console">
+      
+      <!-- 보셀 입자 타격 피드백 및 햅틱 연동 파쇄 트리거 버튼 -->
       <div class="shred-btn-container">
-        <button class="shred-btn" id="btn-shred">텍스트 파쇄 [HOLD]</button>
+        <button class="shred-trigger" id="btn-shred">텍스트 파쇄 [HOLD TO ABSORB]</button>
       </div>
 
-      <!-- 회복 에너지 바 -->
-      <div class="energy-box">
-        <div class="energy-label">⚙️ CRITICAL RECOVERY ENERGY</div>
+      <!-- 시스템 안정도 복구 에너지 바 레일 -->
+      <div class="energy-rail">
+        <div class="energy-text">⚙️ SYSTEM RECOVERY STABILITY SPEED</div>
         <div class="energy-bar-bg">
           <div class="energy-bar-fill" id="energy-fill"></div>
         </div>
       </div>
 
-      <!-- 인프라 업그레이드 & 영수증 슬롯 -->
-      <div class="bottom-row">
-        <div class="upgrade-grid">
-          <button class="btn-upgrade">
+      <!-- 인프라 업그레이드 노드 랙 & 영지식 증명(ZKP) 보상 영수증 출력 기기 -->
+      <div class="console-footer">
+        <div class="infra-group">
+          <button class="btn-infra" id="upgrade-machine">
             <span class="icon">☕</span>
             <span>커피머신</span>
-            <span class="lv">Lv.1</span>
+            <span class="status">Lv.1</span>
           </button>
-          <button class="btn-upgrade">
+          <button class="btn-infra" id="upgrade-bike">
             <span class="icon">🛵</span>
-            <span>배달오토바이</span>
-            <span class="lv">Lv.1</span>
+            <span>배달바이크</span>
+            <span class="status">Lv.1</span>
           </button>
-          <button class="btn-upgrade">
+          <button class="btn-infra" id="upgrade-safety">
             <span class="icon">🛣️</span>
             <span>인도안전구역</span>
-            <span class="lv">INFRA</span>
+            <span class="status">INFRA</span>
           </button>
         </div>
 
-        <!-- 영지식 증명 쿠폰 지갑 -->
-        <div class="zkp-receipt-box" id="zkp-box">
-          <div class="zkp-title">ZKP WALLET</div>
-          <div class="zkp-status" id="zkp-text">쿠폰 준비중</div>
-          <div style="font-size: 5px; color: #aaa; font-family: monospace; transform: scale(0.95); margin-top: 2px;">HASH:0x7F4C...</div>
+        <!-- 최종 안정화 해시 릴리즈 영수증 -->
+        <div class="zkp-wallet-slip" id="zkp-box">
+          <div class="zkp-title">ZKP VERIFIER</div>
+          <div class="zkp-value" id="zkp-text">쿠폰 준비중</div>
+          <div style="font-size: 4px; color: #888; font-family: monospace; text-align: center; margin-top: 1px;">PROOF_HASH:0x7F4C...</div>
         </div>
       </div>
+
     </div>
+
   </div>
 
   <script src="script.js"></script>

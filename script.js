@@ -1,22 +1,23 @@
 // ==========================================
-// 1. GAME CORE STATE (시스템 상태 트리)
+// 1. GAME CORE STATE (메인프레임 상태 트리)
 // ==========================================
 const state = {
-  mental: 24,       // 커피숍 멘탈 (시작: 24%, 목표: 100%)
-  accident: 45,     // 인도 배달사고율 (시작: 45%, 목표: 0%)
-  shield: 55,       // 리뷰 보안쉴드 (시작: 55%, 목표: 100%)
-  customers: 310,   // 단골 손님 수 (시작: 310명, 목표: 610명)
-  noise: 8,         // 소음 분쟁비용 (시작: 8%, 목표: 2%)
-  revenue: 0,       // 누적 시너지 수익 (시작: \$0, 목표: \$1,280)
-  energy: 45,       // 임계 회복 에너지 게이지
+  mental: 24,       // 커피숍 멘탈 (시작 24%, 목표 100%)
+  accident: 45,     // 인도 배달사고율 (시작 45%, 임계치 50%, 목표 0%)
+  shield: 55,       // 리뷰 보안쉴드 (시작 55%, 목표 100%)
+  customers: 310,   // 단골 손님 수 (시작 310 -> 목표 610)
+  noise: 8,         // 소음 분쟁비용 (시작 8% -> 목표 2%)
+  revenue: 0,       // 누적 시너지 수익 (시작 $0 -> 목표 $1,280)
+  energy: 45,       // 복구 안정화 게이지
   isHolding: false, // 파쇄 버튼 홀드 여부
-  holdTime: 0       // 홀드 지속 시간 (밀리초)
+  holdTime: 0       // 홀드 지속 가속 시간 (t)
 };
 
 // ==========================================
-// 2. DOM ELEMENTS MAPPING (인터페이스 바인딩)
+// 2. DOM INTERFACE COMPONENT MAPPING
 // ==========================================
 const dom = {
+  mainContainer: document.getElementById('main-container'),
   mental: document.getElementById('stat-mental'),
   accident: document.getElementById('stat-accident'),
   shield: document.getElementById('stat-shield'),
@@ -25,17 +26,22 @@ const dom = {
   revenue: document.getElementById('stat-revenue'),
   energyFill: document.getElementById('energy-fill'),
   btnShred: document.getElementById('btn-shred'),
+  cardsContainer: document.getElementById('pollution-cards-container'),
   logBox: document.getElementById('log-stream-box'),
-  agentsContainer: document.getElementById('dynamic-agents'),
-  mapFrame: document.getElementById('map-frame'),
-  svgRoutes: document.getElementById('vector-svg-routes'),
+  agentsContainer: document.getElementById('rider-agents-pool'),
+  viewport: document.getElementById('viewport-frame'),
   zkpBox: document.getElementById('zkp-box'),
   zkpText: document.getElementById('zkp-text'),
-  canvas: document.getElementById('shred-canvas')
+  canvas: document.getElementById('shred-canvas'),
+  upgrades: {
+    machine: document.getElementById('upgrade-machine'),
+    bike: document.getElementById('upgrade-bike'),
+    safety: document.getElementById('upgrade-safety')
+  }
 };
 
 // ==========================================
-// 3. CANVAS PARTICLE ENGINE (파쇄 파티클 렌더러)
+// 3. CANVAS VORTEX GENERATOR (보셀 디졸브 소용돌이 흡입 엔진)
 // ==========================================
 const ctx = dom.canvas.getContext('2d');
 let particles = [];
@@ -47,167 +53,168 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-function spawnShredParticles() {
-  // 터미널 및 중앙 버퍼 영역에서 흡입구로 빨려 들어가는 픽셀 입자 생성
-  for (let i = 0; i < 5; i++) {
+// 카드가 파쇄될 때 텍스트 글자들을 보셀(Voxel) 입자로 변환하는 스폰 함수
+function spawnVoxelParticles(cardElement) {
+  const cardRect = cardElement.getBoundingClientRect();
+  const canvasRect = dom.canvas.getBoundingClientRect();
+  
+  // 카드의 상대 중심 좌표 계산
+  const startX = cardRect.left - canvasRect.left + (cardRect.width / 2);
+  const startY = cardRect.top - canvasRect.top + (cardRect.height / 2);
+
+  for (let i = 0; i < 15; i++) {
     particles.push({
-      x: Math.random() * dom.canvas.width,
-      y: dom.canvas.height * 0.4 + (Math.random() * 50),
-      size: Math.random() * 4 + 2,
-      color: Math.random() > 0.5 ? 'var(--neon-red)' : 'var(--neon-yellow)',
-      speedY: (Math.random() * 3 + 2)
+      x: startX + (Math.random() - 0.5) * 60,
+      y: startY + (Math.random() - 0.5) * 30,
+      size: Math.random() * 3 + 2, // 레고 블록 모양 보셀 픽셀
+      color: 'var(--neon-red)',
+      angle: Math.random() * Math.PI * 2,
+      radius: Math.random() * 20 + 10,
+      speed: Math.random() * 2 + 2
     });
   }
 }
 
-function animateParticles() {
+function animateVortexEngine() {
   ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
   
-  if (state.isHolding) {
-    spawnShredParticles();
-  }
+  // 파쇄기 흡입 싱크홀 최종 타깃 좌표 (하단 버튼 중심 레이어)
+  const targetX = dom.canvas.width / 2;
+  const targetY = dom.canvas.height - 80;
 
   particles.forEach((p, idx) => {
     ctx.fillStyle = p.color;
-    // 사이버펑크 2D 네온 큐브 사각형 렌더링
     ctx.fillRect(p.x, p.y, p.size, p.size);
-    
-    // 파쇄 중심 축(하단)으로 수렴 및 낙하 가속도 계산
-    p.y += p.speedY;
-    p.x += (dom.canvas.width / 2 - p.x) * 0.05;
 
-    if (p.y > dom.canvas.height) {
-      particles.splice(idx, 1);
+    if (state.isHolding) {
+      // 나선형 볼텍스 중력 공식 연산 (v = g * t^2 가속 모델링 모킹)
+      const dx = targetX - p.x;
+      const dy = targetY - p.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 12) {
+        // 완전 분쇄 지점 도달 시 불꽃 스파크 소멸 연출 및 계단식 햅틱 피드백 트리거
+        particles.splice(idx, 1);
+        triggerGranularHaptic(20);
+        triggerShredAudioEffect();
+      } else {
+        // 소용돌이 회전각 및 끌어당기는 내향 벡터 가산
+        p.angle += 0.12; 
+        const attractionForce = (state.holdTime / 500) + 2.5; 
+        p.x += (dx / distance) * attractionForce + Math.cos(p.angle) * p.speed;
+        p.y += (dy / distance) * attractionForce + Math.sin(p.angle) * p.speed;
+      }
+    } else {
+      // 평시에는 가볍게 허공으로 떠오르다 소멸
+      p.y -= 0.5;
+      if (p.y < 0) particles.splice(idx, 1);
     }
   });
 
-  requestAnimationFrame(animateParticles);
+  requestAnimationFrame(animateVortexEngine);
 }
 
 // ==========================================
-// 4. DATA LOG STREAM ENGINE (텍스트 스트림 버퍼)
+// 4. HAPTIC & AUDIO MULTI-MIXER HOOK (손맛 제어 API)
 // ==========================================
-const rawIssues = [
-  { text: "⚠️ [인도주행] 배달 오토바이 보행자 아슬아슬하게 추월 분쟁!", type: "error" },
-  { text: "💥 [충돌위험] 인도 안전구역 내 주행 속도 위반!", type: "error" },
-  { text: "📢 [골목소음] 카페 본점 앞 오토바이 공회전 주민 항의!", type: "warn" },
-  { text: "🔥 [상인번아웃] '분당 5건 제조는 무리!' 커피숍 멘탈 붕괴 위기", type: "warn" },
-  { text: "🛑 [알고리즘 분쟁] 배달료 정산 기준 단가 타협 불일치 폭동 직전", type: "error" },
-  { text: "📉 [악성리뷰] '식어서 도착함' 별점 테러 발생 데이터 침투", type: "info" }
+function triggerGranularHaptic(ms) {
+  if (navigator.vibrate) {
+    navigator.vibrate(ms);
+  }
+}
+
+function triggerShredAudioEffect() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.type = 'triangle'; // 퍼퍼퍽 거친 디지털 크러시음 텍스처
+    oscillator.frequency.setValueAtTime(Math.random() * 80 + 40, audioCtx.currentTime); 
+    
+    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime); // 사운드 볼륨 제어 한계선
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.08);
+  } catch(e) {}
+}
+
+// ==========================================
+// 5. POLLUTION CARD DATA SOURCE & DISPATCH
+// ==========================================
+const pollutionPool = [
+  { id: "p1", tag: "갑질주문", msg: "💬 '벨 누르지 말고 기어와라 숨소리도 내지 마'", step: "ingest" },
+  { id: "p2", tag: "악질업주행태", msg: "🏭 '배달원 주제에 어디 감히 매장 내부로 들어와?'", step: "brew" },
+  { id: "p3", tag: "보도주행", msg: "🛵 '알고리즘 시간 밀린다! 사람 비켜, 인도 질주!'", step: "dispatch" },
+  { id: "p4", tag: "악평리뷰", msg: "📉 '별점 1점 테러: 커피에서 사람 냄새 남 환불해줘'", step: "ingest" }
 ];
 
-const successLogs = [
-  { text: "✅ [시너지] 텍스트 매핑 완화 격자 안전성 복구 완료", type: "success" },
-  { text: "⚡ [벡터 인텔리전스] 익명 좌표계 변환 성공 효율 누적", type: "success" },
-  { text: "💵 [정산] 소음 합의 비용 분기 절감액 국고 전환", type: "success" }
-];
+function injectPollutionCard() {
+  if (dom.cardsContainer.children.length >= 3 || state.isHolding) return;
+
+  const data = pollutionPool[Math.floor(Math.random() * pollutionPool.length)];
+  
+  if (document.getElementById(data.id)) return;
+
+  const card = document.createElement('div');
+  card.className = 'pollution-card';
+  card.id = data.id;
+  card.dataset.step = data.step;
+  card.innerHTML = `
+    <div class="card-tag">${data.tag}</div>
+    <div class="card-msg">${data.msg}</div>
+  `;
+  
+  dom.cardsContainer.appendChild(card);
+  addLogLine(`🚨 커뮤니티 훼손 요소 침투: [${data.tag}] 데이터 매핑 차단 시급!`, "error");
+
+  highlightPipelineStation(data.step, true);
+}
+
+function highlightPipelineStation(stepId, isActive) {
+  const stationMap = { ingest: 'station-ingest', brew: 'station-brew', dispatch: 'station-dispatch' };
+  const target = document.getElementById(stationMap[stepId]);
+  if (target) {
+    if (isActive) target.classList.add('active');
+    else target.classList.remove('active');
+  }
+}
 
 function addLogLine(text, type) {
   const line = document.createElement('div');
   line.className = `log-line ${type}`;
   line.innerText = `> ${text}`;
   dom.logBox.insertBefore(line, dom.logBox.firstChild);
-  
-  // 가독성 확보를 위한 최대 스크롤 버퍼 18줄 고정
-  if (dom.logBox.children.length > 18) {
-    dom.logBox.removeChild(dom.logBox.lastChild);
-  }
+  if (dom.logBox.children.length > 8) dom.logBox.removeChild(dom.logBox.lastChild);
 }
 
 // ==========================================
-// 5. 2D VECTOR MULTI-AGENT SIMULATION
+// 6. 2D RIDER AGENT VECTOR RUNNER
 // ==========================================
 const riders = [];
-const citizens = [];
-
-function spawnInitialAgents() {
-  // 다중 라이더 에이전트 인스턴스화
-  for (let i = 0; i < 2; i++) {
-    const r = document.createElement('div');
-    r.className = 'rider-agent';
-    r.innerText = '🛵';
-    dom.agentsContainer.appendChild(r);
-    riders.push({ el: r, x: 25, y: 55, targetX: 35, targetY: 30, speed: 1.5 + Math.random() });
-  }
-  // 무작위 동네 주민 배회 개체 인스턴스화
-  for (let i = 0; i < 3; i++) {
-    const c = document.createElement('div');
-    c.className = 'citizen-agent';
-    c.innerText = ['🚶', '🏃', '🧍'][Math.floor(Math.random() * 3)];
-    dom.agentsContainer.appendChild(c);
-    citizens.push({ el: c, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 });
-  }
+function spawnRiderAgent() {
+  const r = document.createElement('div');
+  r.className = 'rider-node';
+  r.innerText = '🛵';
+  dom.agentsContainer.appendChild(r);
+  riders.push({ el: r, x: Math.random() * 80 + 10, y: 15, speedX: (Math.random() - 0.5) * 2 });
 }
 
-function updateSimulation() {
-  // 라이더 가중치 경로 탐색 및 타깃 이동 연산
+function updateRiderAgents() {
   riders.forEach(r => {
-    const dx = r.targetX - r.x;
-    const dy = r.targetY - r.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    
-    if (dist < 2) {
-      if (r.targetX === 35) {
-        r.targetX = Math.random() * 80 + 10;
-        r.targetY = Math.random() * 80 + 10;
-      } else {
-        r.targetX = 35; r.targetY = 30; // 본점 회귀 경로
-      }
-    } else {
-      r.x += (dx / dist) * r.speed;
-      r.y += (dy / dist) * r.speed;
-    }
+    r.x += r.speedX;
+    if (r.x < 5 || r.x > 95) r.speedX *= -1; // 벨트 폭 왕복 주행
     r.el.style.left = `${r.x}%`;
     r.el.style.top = `${r.y}%`;
-
-    // 파쇄 액션 비활성화 상태일 때 주민과의 근접도에 따른 충돌 및 이슈 제너레이터
-    citizens.forEach(c => {
-      const prox = Math.sqrt(Math.pow(r.x - c.x, 2) + Math.pow(r.y - c.y, 2));
-      if (prox < 6 && Math.random() < 0.04 && !state.isHolding) {
-        triggerConflict(r.x, r.y);
-      }
-    });
   });
-
-  // 주민 랜덤 워크(Random Walk) 연산
-  citizens.forEach(c => {
-    if (Math.random() < 0.1) {
-      c.x += (Math.random() - 0.5) * 4;
-      c.y += (Math.random() - 0.5) * 4;
-      c.x = Math.max(10, Math.min(90, c.x));
-      c.y = Math.max(10, Math.min(90, c.y));
-    }
-    c.el.style.left = `${c.x}%`;
-    c.el.style.top = `${c.y}%`;
-  });
-
-  // 실시간 빅데이터 벡터 라인 드로잉
-  if (riders.length > 0) {
-    dom.svgRoutes.innerHTML = `<line x1="${riders[0].x}%" y1="${riders[0].y}%" x2="${riders[0].targetX}%" y2="${riders[0].targetY}%" stroke="rgba(0,163,255,0.4)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
-  }
-}
-
-function triggerConflict(mx, my) {
-  const bub = document.createElement('div');
-  bub.className = 'conflict-bubble';
-  bub.style.left = `${mx}%`;
-  bub.style.top = `${my}%`;
-  bub.innerText = "🚨 갈등 스파크!";
-  dom.mapFrame.appendChild(bub);
-  setTimeout(() => bub.remove(), 1200);
-
-  // 실시간 인간 번아웃 페널티 역치 가산
-  state.accident = Math.min(100, state.accident + Math.floor(Math.random() * 4 + 2));
-  state.noise = Math.min(100, state.noise + Math.floor(Math.random() * 2 + 1));
-  state.mental = Math.max(0, state.mental - Math.floor(Math.random() * 3 + 1));
-  
-  const issue = rawIssues[Math.floor(Math.random() * rawIssues.length)];
-  addLogLine(issue.text, issue.type);
-  updateHUD();
 }
 
 // ==========================================
-// 6. HUD REAL-TIME STATS COUPLING
+// 7. QUANT HUD DATA SYNC & STABILIZATION CRITERIA
 // ==========================================
 function updateHUD() {
   dom.mental.innerText = `${state.mental}%`;
@@ -218,73 +225,142 @@ function updateHUD() {
   dom.revenue.innerText = `$${state.revenue.toLocaleString()}`;
   dom.energyFill.style.width = `${state.energy}%`;
 
-  // 승리 조건 체크 (영지식 증명 QR 영수증 인디케이터 바인딩)
+  if (state.accident >= 50) dom.mainContainer.classList.add('critical-alert');
+  else dom.mainContainer.classList.remove('critical-alert');
+
+  // 최종 안정화 해시 릴리즈 조건 충족 연산
   if (state.revenue >= 1280 && state.noise <= 2 && state.customers >= 610) {
-    dom.zkpBox.className = "zkp-receipt-box ready";
+    dom.mainContainer.classList.remove('critical-alert');
+    dom.mainContainer.classList.add('stabilized');
+    dom.zkpBox.classList.add('active');
     dom.zkpText.innerText = "🎟️ 영수증 발급완료";
   } else {
-    dom.zkpBox.className = "zkp-receipt-box";
+    dom.mainContainer.classList.remove('stabilized');
+    dom.zkpBox.classList.remove('active');
     dom.zkpText.innerText = "쿠폰 준비중";
   }
 }
 
 // ==========================================
-// 7. HOLD MECHANICS & BALANCE FORMULA INTERRUPT
+// 8. INTERACTION HANDLER & HOLD ATTRACT PROCOLS
 // ==========================================
-function startHold() {
+function startAbsorbHold(e) {
+  e.preventDefault();
   state.isHolding = true;
-  dom.btnShred.classList.add('holding');
+  dom.btnShred.classList.add('absorbing');
+  triggerGranularHaptic(30);
 }
 
-function endHold() {
+function endAbsorbHold() {
   state.isHolding = false;
-  dom.btnShred.classList.remove('holding');
+  dom.btnShred.classList.remove('absorbing');
   state.holdTime = 0;
+  
+  const activeCards = dom.cardsContainer.querySelectorAll('.pollution-card');
+  activeCards.forEach(c => c.classList.remove('shredding-glitch'));
 }
 
-dom.btnShred.addEventListener('mousedown', startHold);
-dom.btnShred.addEventListener('mouseup', endHold);
-dom.btnShred.addEventListener('mouseleave', endHold);
-dom.btnShred.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
-dom.btnShred.addEventListener('touchend', endHold);
+dom.btnShred.addEventListener('mousedown', startAbsorbHold);
+dom.btnShred.addEventListener('mouseup', endAbsorbHold);
+dom.btnShred.addEventListener('mouseleave', endAbsorbHold);
+dom.btnShred.addEventListener('touchstart', startAbsorbHold);
+dom.btnShred.addEventListener('touchend', endAbsorbHold);
 
-// CORE TICK LOOP (100ms FRAME)
+// ==========================================
+// 9. UPGRADE LOGIC ACTION BINDING (인프라 고도화 시스템)
+// ==========================================
+let machineLv = 1, bikeLv = 1, infraActive = false;
+const upgradeCosts = { machine: 150, bike: 200, infra: 400 };
+
+dom.upgrades.machine.addEventListener('click', () => {
+  if (state.revenue >= upgradeCosts.machine && machineLv < 5) {
+    state.revenue -= upgradeCosts.machine; machineLv++;
+    upgradeCosts.machine = Math.floor(upgradeCosts.machine * 1.5);
+    dom.upgrades.machine.querySelector('.status').innerText = `Lv.${machineLv}`;
+    addLogLine(`🛠️ [인프라] 초고속 머신 Lv.${machineLv} 도입. 상인 번아웃 저항 가산.`, "success");
+    state.mental = Math.min(100, state.mental + 15);
+    updateHUD();
+  }
+});
+
+dom.upgrades.bike.addEventListener('click', () => {
+  if (state.revenue >= upgradeCosts.bike && bikeLv < 5) {
+    state.revenue -= upgradeCosts.bike; bikeLv++;
+    upgradeCosts.bike = Math.floor(upgradeCosts.bike * 1.6);
+    dom.upgrades.bike.querySelector('.status').innerText = `Lv.${bikeLv}`;
+    spawnRiderAgent(); // 신규 자원 물리 에이전트 동적 분기 스폰
+    addLogLine(`🛠️ [인프라] 고성능 배달바이크 기단 확충 완료 (에이전트 추가)`, "success");
+    updateHUD();
+  }
+});
+
+dom.upgrades.safety.addEventListener('click', () => {
+  if (state.revenue >= upgradeCosts.infra && !infraActive) {
+    state.revenue -= upgradeCosts.infra; infraActive = true;
+    dom.upgrades.safety.querySelector('.status').innerText = `ACTIVE`;
+    dom.upgrades.safety.style.borderColor = 'var(--neon-green)';
+    state.accident = Math.max(0, state.accident - 25);
+    state.noise = Math.max(2, state.noise - 3);
+    addLogLine(`🛣️ [시빅테크] 인도안전구역 도입 (갈등 확률 50% 영구 감쇄 프로토콜 가동)`, "success");
+    updateHUD();
+  }
+});
+
+// ==========================================
+// 10. SYSTEM TICK TICK ENGINE RUN (100ms FPS 실시간 관제 연산 가동)
+// ==========================================
 setInterval(() => {
-  updateSimulation();
+  updateRiderAgents();
 
   if (state.isHolding) {
     state.holdTime += 100;
     
-    // 홀드 지속 시간(t) 가속도 공식에 따른 정량 감쇄 및 복구
-    if (state.holdTime > 200) {
-      state.energy = Math.min(100, state.energy + 1);
-      state.accident = Math.max(0, state.accident - 1);
-      state.noise = Math.max(2, state.noise - 1); 
-      state.mental = Math.min(100, state.mental + 1);
+    if (state.holdTime % 200 === 0) triggerGranularHaptic(30);
+
+    const activeCards = dom.cardsContainer.querySelectorAll('.pollution-card');
+    
+    if (activeCards.length > 0) {
+      const targetCard = activeCards[0]; // 가장 오래 큐에 체증된 첫 번째 타깃 카드 고정
+      targetCard.classList.add('shredding-glitch');
       
-      if (Math.random() < 0.15) {
-        state.customers = Math.min(610, state.customers + 10);
-        state.revenue = Math.min(1280, state.revenue + 40);
+      spawnVoxelParticles(targetCard);
+
+      if (state.holdTime > 300) {
+        state.energy = Math.min(100, state.energy + 2);
         
-        const slog = successLogs[Math.floor(Math.random() * successLogs.length)];
-        addLogLine(slog.text, slog.type);
+        const reductionFactor = infraActive ? 2 : 1;
+        state.accident = Math.max(0, state.accident - (1 * reductionFactor));
+        state.noise = Math.max(2, state.noise - (0.5 * reductionFactor));
+        state.mental = Math.min(100, state.mental + (1 * (1 + machineLv * 0.2)));
+
+        if (Math.random() < 0.22) {
+          state.customers = Math.min(610, state.customers + Math.floor(12 * (1 + bikeLv * 0.15)));
+          state.revenue = Math.min(1280, state.revenue + Math.floor(45 * (1 + machineLv * 0.2)));
+          
+          const clearedTag = targetCard.querySelector('.card-tag').innerText;
+          addLogLine(`⚡ [벡터 공간 정화] [${clearedTag}] 오염 텍스트 완파 성공.`, "success");
+          
+          highlightPipelineStation(targetCard.dataset.step, false);
+          targetCard.remove();
+        }
+        updateHUD();
       }
+    } else {
+      state.energy = Math.min(100, state.energy + 1);
       updateHUD();
     }
   } else {
-    // 유휴 상태일 때 백그라운드 환경 변수 침투 확률 연산
-    if (Math.random() < 0.015) {
-      const issue = rawIssues[Math.floor(Math.random() * rawIssues.length)];
-      addLogLine(issue.text, issue.type);
+    const spawnChance = infraActive ? 0.02 : 0.04;
+    if (Math.random() < spawnChance) {
+      injectPollutionCard();
     }
   }
 }, 100);
 
 // ==========================================
-// 8. ENGINE INITIALIZATION (구동 초기화)
+// 11. ENGINE INITIALIZATION START
 // ==========================================
-spawnInitialAgents();
-animateParticles();
-addLogLine("SYSTEM INGESTION INITIALIZED. STANDBY ORDERING...", "info");
-addLogLine("⚠️ PIPELINE EXGEST ALERT: SIDEWALK CONFLICT DETECTED.", "error");
+for (let i = 0; i < 2; i++) spawnRiderAgent();
+animateVortexEngine();
+addLogLine("MAIN_FRAME CORE_KERNEL V3.5 ONLINE. STANDBY MONITORING Center...", "success");
 updateHUD();
