@@ -4,66 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vector Tycoon: The Harmony Grid</title>
-    <!-- 외부로 분리된 스타일시트 연동 -->
+    <!-- 와이어프레임 네온 테마 스타일시트 연결 -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LAYER 1: StatusBar (Top Monitor Component) -->
+    <!-- LAYER 1: StatusBar (3 Divided Top Cards Layout) -->
     <div class="status-bar">
-        <!-- Local Community Metric (Red Alert Initial State) -->
+        <!-- Card 1: LOCAL SYSTEM -->
         <div class="status-card layer-1 alert" id="card-l1">
-            <div class="layer-title">L1: Local Community</div>
-            <div class="metric" id="metric-l1">Sanity: 24%</div>
+            <div class="card-header">1. LOCAL</div>
+            <div class="metric-group">
+                <div class="metric-item">
+                    <span class="metric-label">Merchant Sanity</span>
+                    <span class="metric-value v1" id="m-sanity">24%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Pedestrian Safety</span>
+                    <span class="metric-value v2" id="m-safety">45%</span>
+                </div>
+            </div>
         </div>
-        <!-- Consumer Ecosystem Metric -->
+
+        <!-- Card 2: ECOSYSTEM SYSTEM -->
         <div class="status-card layer-2" id="card-l2">
-            <div class="layer-title">L2: Consumer Eco</div>
-            <div class="metric" id="metric-l2">Shield: 45%</div>
+            <div class="card-header">2. ECOSYSTEM</div>
+            <div class="metric-group">
+                <div class="metric-item">
+                    <span class="metric-label">Privacy Shield</span>
+                    <span class="metric-value v1" id="m-shield">55%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Customer Loyalty</span>
+                    <span class="metric-value v2" id="m-loyalty">310</span>
+                </div>
+            </div>
         </div>
-        <!-- Platform Treasury Metric -->
+
+        <!-- Card 3: PLATFORM TREASURY -->
         <div class="status-card layer-3" id="card-l3">
-            <div class="layer-title">L3: Treasury</div>
-            <div class="metric" id="metric-l3">+$0.00</div>
+            <div class="card-header">3. PLATFORM</div>
+            <div class="metric-group">
+                <div class="metric-item">
+                    <span class="metric-label">System Overhead</span>
+                    <span class="metric-value v1" id="m-overhead">8%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Synergy Dividend</span>
+                    <span class="metric-value v2" id="m-dividend">$0</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- LAYER 2: SimulationCanvas (Center Isometric Grid Engine) -->
+    <!-- LAYER 2: SimulationCanvas (Center Isometric Grid Window) -->
     <div class="canvas-container">
-        <div class="game-overlay">🚨 SCENARIO: RUSH-HOUR CHAOS</div>
+        <div class="canvas-overlay-tag">SYS//: ISOMETRIC HARMONY GRID RUNNING</div>
         <canvas id="simCanvas"></canvas>
     </div>
 
-    <!-- LAYER 3: ControlDashboard (Lower Tactical Module) -->
+    <!-- LAYER 3: ControlDashboard (Lower Interaction Zone) -->
     <div class="control-dashboard">
-        <!-- Tactile Action: Semantic Shredder Hold Mechanism -->
-        <div class="shredder-zone">
-            <button class="shredder-btn" id="shredderBtn">HOLD TO SHRED TEXT</button>
+        <!-- Main Action Module Row -->
+        <div class="action-row">
+            <!-- Modular Glowing Button: SEMANTIC SHREDDER -->
+            <button class="shredder-btn" id="shredderBtn">SEMANTIC SHREDDER</button>
+            
+            <!-- Hyper-Velocity Energy Gauge Component -->
+            <div class="energy-gauge">
+                <div class="gauge-circle" id="energyGauge">
+                    <span class="gauge-text">ENERGY</span>
+                </div>
+            </div>
         </div>
 
-        <!-- Infrastructure & Cryptographic Reward Grid -->
-        <div class="bottom-row">
-            <!-- Tactical Infrastructure Upgrade Slots -->
-            <div class="upgrades">
+        <!-- Persistent Navigation Sub-Grid Section -->
+        <div class="persistent-grid">
+            <!-- 3 Divided Tactical Upgrade Slots -->
+            <div class="upgrade-container">
                 <div class="upgrade-slot">
-                    <strong>Vector Guardrail</strong>
-                    <span>L1 Protection</span>
+                    <span class="slot-title">Coffee</span>
+                    <!-- CSS Placeholder Icon Block -->
+                    <div class="slot-icon">☕</div>
+                    <span>Upgrade</span>
                 </div>
                 <div class="upgrade-slot">
-                    <strong>ZKP Screener</strong>
-                    <span>L2 Encryption</span>
+                    <span class="slot-title">Rider</span>
+                    <div class="slot-icon">🛵</div>
+                    <span>Upgrade</span>
+                </div>
+                <div class="upgrade-slot">
+                    <span class="slot-title">Customer</span>
+                    <div class="slot-icon">👤</div>
+                    <span>Infrastructure</span>
                 </div>
             </div>
             
-            <!-- Anonymous Wallet Module (ZKP Shifting QR Code Preview) -->
-            <div class="wallet-preview" id="walletPreview">
-                <div class="qr-placeholder" id="qrContainer"></div>
-                <div class="wallet-label" id="walletLabel">ZKP SHIFTING</div>
+            <!-- Anonymous Wallet (ZKP Crypto Coupon QR Preview) -->
+            <div class="anonymous-wallet" id="anonymousWallet">
+                <div class="qr-container" id="qrContainer"></div>
+                <div class="wallet-footer-label" id="walletLabel">2GP Coupon Ready</div>
             </div>
         </div>
     </div>
 
-    <!-- 외부로 분리된 런타임 게임 스크립트 연동 -->
+    <!-- 와이어프레임 컴포넌트 구동 스크립트 연결 -->
     <script src="script.js"></script>
 </body>
 </html>

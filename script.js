@@ -1,42 +1,68 @@
 // ==========================================
-// DOM Elements Selection
+// 1. DOM Elements Mapping
 // ==========================================
 const canvas = document.getElementById('simCanvas');
 const ctx = canvas.getContext('2d');
 const shredderBtn = document.getElementById('shredderBtn');
+const energyGauge = document.getElementById('energyGauge');
 
-const metricL1 = document.getElementById('metric-l1');
-const metricL2 = document.getElementById('metric-l2');
-const metricL3 = document.getElementById('metric-l3');
+// Top Metrics Cards DOM
+const mSanity = document.getElementById('m-sanity');
+const mSafety = document.getElementById('m-safety');
+const mShield = document.getElementById('m-shield');
+const mLoyalty = document.getElementById('m-loyalty');
+const mOverhead = document.getElementById('m-overhead');
+const mDividend = document.getElementById('m-dividend');
+
 const cardL1 = document.getElementById('card-l1');
-const walletPreview = document.getElementById('walletPreview');
+const anonymousWallet = document.getElementById('anonymousWallet');
 const walletLabel = document.getElementById('walletLabel');
 
 // ==========================================
-// Game State & Configuration
+// 2. Real-Time Engine State Variables
 // ==========================================
 let isHolding = false;
-let l1Sanity = 24;
-let l2Shield = 45;
-let l3Dividend = 0.00;
 let gameCleared = false;
 
-// Fixed Scenario Data: Toxic Plaintext Stream Entities
-const toxicTexts = [
-    "LATE DELIVERY AGAIN?!", 
-    "TRASH SERVICE BAN THIS RIDER", 
-    "COLD COFFEE SMH", 
-    "SIDEWALK RIDER ALMOST HIT ME", 
-    "SPAM REVIEWS GOO", 
-    "DANGEROUS DRIVING"
-];
+// Synchronized Stats to Match Wireframe Scenario Initial State
+let stats = {
+    sanity: 24,       // L1 Alert Level
+    safety: 45,       // L1
+    shield: 55,       // L2
+    loyalty: 310,     // L2 Target: 610
+    overhead: 8,      // L3 Attenuates to 2%
+    dividend: 0,      // L3 Target: \$1280
+    energy: 45        // Gauge Percent
+};
 
-let textNodes = [];
+// Isometric Simulation Entities
+let rawTextStreams = [];
 let vectorCubes = [];
 
+// Static Infrastructure Isometric Node Positions (Mapped from Diagram Layout)
+const staticNodes = [
+    { type: 'shop', x: 0, y: -40, icon: '☕', label: 'Coffee Shop' },
+    { type: 'shop', x: -60, y: 10, icon: '☕', label: 'Hub' },
+    { type: 'rider', x: 30, y: -10, icon: '🛵', label: 'Rider Node' },
+    { type: 'customer', x: -20, y: 60, icon: '👤', label: 'Customer' },
+    { type: 'customer', x: 50, y: 40, icon: '👤', label: 'User Node' }
+];
+
+const chaosPhrases = [
+    "DATA LEAK ALERT!", "REVIEWS BOMBING", "SIDEWALK ACCIDENT",
+    "HUMAN BURNOUT", "LAWSUIT THREAT", "COMPLAINT OVERFLOW"
+];
+
 // ==========================================
-// Canvas Configuration & Resize Engine
+// 3. Isometric Coordinate Converter Tool
 // ==========================================
+function toIso(x, y) {
+    const isoX = (x - y) + (canvas.width / 2);
+    const isoY = (x + y) * 0.5 + (canvas.height / 2 - 20);
+    return { x: isoX, y: isoY };
+}
+
+// Adjust Screen Geometry Dynamically
 function resize() {
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
@@ -45,164 +71,187 @@ window.addEventListener('resize', resize);
 resize();
 
 // ==========================================
-// Spawning Logic: Stream Chaos Data Nodes
+// 4. Data Streams Chaos Generator
 // ==========================================
-function spawnText() {
-    // Stop spawning when shredding or game is cleared
-    if (isHolding || gameCleared || textNodes.length > 12) return;
+function injectChaosNode() {
+    if (isHolding || gameCleared || rawTextStreams.length > 8) return;
     
-    const text = toxicTexts[Math.floor(Math.random() * toxicTexts.length)];
-    textNodes.push({
-        x: Math.random() * (canvas.width - 150) + 50,
-        y: Math.random() * (canvas.height - 100) + 50,
-        text: text,
-        vx: (Math.random() - 0.5) * 1.5,
-        vy: (Math.random() - 0.5) * 1.5,
-        alpha: 1
+    // Pick a random grid position to explode text stream
+    const rx = (Math.random() - 0.5) * 160;
+    const ry = (Math.random() - 0.5) * 160;
+    const phrase = chaosPhrases[Math.floor(Math.random() * chaosPhrases.length)];
+    
+    rawTextStreams.push({
+        x: rx, y: ry,
+        text: phrase,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        bounceTimer: 0
     });
 }
-setInterval(spawnText, 800);
+setInterval(injectChaosNode, 1000);
 
 // ==========================================
-// Tactile Input Hook Mechanics (Touch & Mouse)
+// 5. Tactile Control & Input Interfaces
 // ==========================================
-function startShred(e) {
+function triggerHold(e) {
     e.preventDefault();
     if (gameCleared) return;
     isHolding = true;
     shredderBtn.classList.add('active');
 }
 
-function stopShred() {
+function releaseHold() {
     isHolding = false;
     shredderBtn.classList.remove('active');
 }
 
-// Multi-device listeners
-shredderBtn.addEventListener('mousedown', startShred);
-shredderBtn.addEventListener('touchstart', startShred, { passive: false });
-window.addEventListener('mouseup', stopShred);
-window.addEventListener('touchend', stopShred);
+shredderBtn.addEventListener('mousedown', triggerHold);
+shredderBtn.addEventListener('touchstart', triggerHold, { passive: false });
+window.addEventListener('mouseup', releaseHold);
+window.addEventListener('touchend', releaseHold);
 
-// ==========================================
-// Cryptographic Module: ZKP Shifting QR Matrix
-// ==========================================
-function generateQR() {
+// Cryptographic Pseudo ZKP QR Compiler Matrix 
+function compileZkpMatrix() {
     const container = document.getElementById('qrContainer');
     container.innerHTML = '';
-    // Generate 7x7 pseudo cryptographic grid elements
     for (let i = 0; i < 49; i++) {
         const pixel = document.createElement('div');
         pixel.className = 'qr-pixel';
-        pixel.style.opacity = Math.random() > 0.5 ? '1' : '0';
+        pixel.style.background = Math.random() > 0.45 ? '#0b0f17' : 'transparent';
         container.appendChild(pixel);
     }
 }
-generateQR();
-setInterval(() => { if (!gameCleared) generateQR(); }, 300);
+compileZkpMatrix();
+setInterval(() => { if (!gameCleared) compileZkpMatrix(); }, 250);
 
 // ==========================================
-// Real-Time Core Loop & Rendering Pipeline
+// 6. Graphics Pipeline & Simulation Engine Loop
 // ==========================================
-function loop() {
+function renderLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. Draw Isometric Grid Background Lines
-    ctx.strokeStyle = 'rgba(48, 54, 61, 0.3)';
+    // 6A. Draw Grid Mesh Overlay Matrix (Wireframe Style)
+    ctx.strokeStyle = 'rgba(36, 47, 65, 0.4)';
     ctx.lineWidth = 1;
-    for (let i = -canvas.width; i < canvas.width; i += 40) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i + canvas.height, canvas.height);
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.moveTo(i + canvas.height, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
+    for (let i = -180; i <= 180; i += 30) {
+        let p1 = toIso(i, -180);
+        let p2 = toIso(i, 180);
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+
+        let p3 = toIso(-180, i);
+        let p4 = toIso(180, i);
+        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
     }
 
-    // 2. Processing Phase: Hold To Shred Logic & Metric Attenuation
-    if (isHolding && textNodes.length > 0 && !gameCleared) {
-        let target = textNodes[0];
+    // 6B. Draw Static Isometric Structural Architecture Nodes
+    staticNodes.forEach(node => {
+        let pos = toIso(node.x, node.y);
         
-        // Transform current plain text node into neon high-dimensional vector cubes
-        for (let i = 0; i < 6; i++) {
+        // Draw Subtle Base Ring
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.2)';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Node Typography Rendering
+        ctx.fillStyle = 'var(--text-main)';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(node.icon, pos.x, pos.y + 4);
+        
+        ctx.fillStyle = 'var(--text-muted)';
+        ctx.font = '7px monospace';
+        ctx.fillText(node.label, pos.x, pos.y + 22);
+    });
+
+    // 6C. Hold State: Real-Time Vector Shifting Math Formulas
+    if (isHolding && rawTextStreams.length > 0 && !gameCleared) {
+        let targetText = rawTextStreams[0];
+        let pos = toIso(targetText.x, targetText.y);
+
+        // Explode Plaintext into High-Dimensional Vectors
+        for (let i = 0; i < 4; i++) {
             vectorCubes.push({
-                x: target.x + (Math.random() - 0.5) * 40,
-                y: target.y + (Math.random() - 0.5) * 20,
-                size: Math.random() * 6 + 4,
-                color: Math.random() > 0.5 ? 'var(--neon-green)' : 'var(--neon-blue)',
-                speed: Math.random() * 4 + 3
+                cx: pos.x + (Math.random() - 0.5) * 30,
+                cy: pos.y + (Math.random() - 0.5) * 15,
+                size: Math.random() * 5 + 3,
+                vx: (Math.random() - 0.5) * 2,
+                vy: -Math.random() * 4 - 2, // Propulsion upwards toward top metrics
+                color: Math.random() > 0.5 ? 'var(--neon-green)' : 'var(--neon-blue)'
             });
         }
-        textNodes.shift(); // Evacuate processed semantic text unit
+        rawTextStreams.shift(); // Free processed semantic data block
 
-        // Update Matrix State Values (Positive Shift)
-        l1Sanity = Math.min(100, l1Sanity + 4);
-        l2Shield = Math.min(100, l2Shield + 3);
-        l3Dividend += 12.50;
+        // System Overhead Decreases, Loyalty and Dividends Accumulate
+        stats.sanity = Math.min(74, stats.sanity + 5);      // Target wireframe values
+        stats.safety = Math.min(88, stats.safety + 4);
+        stats.shield = Math.min(95, stats.shield + 4);
+        stats.loyalty = Math.min(610, stats.loyalty + 30);
+        stats.overhead = Math.max(2, stats.overhead - 1);
+        stats.dividend = Math.min(1280, stats.dividend + 128);
+        stats.energy = Math.min(100, stats.energy + 5);
 
-        // Apply To Real-Time UI Cards
-        metricL1.textContent = `Sanity: ${l1Sanity}%`;
-        metricL2.textContent = `Shield: ${l2Shield}%`;
-        metricL3.textContent = `+$${l3Dividend.toFixed(2)}`;
+        // Update Matrix View Interfaces Directly
+        mSanity.textContent = `${stats.sanity}%`;
+        mSafety.textContent = `${stats.safety}%`;
+        mShield.textContent = `${stats.shield}%`;
+        mLoyalty.textContent = stats.loyalty;
+        mOverhead.textContent = `${stats.overhead}%`;
+        mDividend.textContent = `$${stats.dividend.toLocaleString()}`;
+        
+        // Dynamically adjust hyper velocity angular gauge asset color border
+        energyGauge.style.background = `conic-gradient(var(--neon-green) 0% ${stats.energy}%, #1a2333 ${stats.energy}% 100%)`;
 
-        // Clear Red Alert if safety threshold reached
-        if (l1Sanity > 60) {
-            cardL1.classList.remove('alert');
-        }
+        if (stats.sanity >= 60) cardL1.classList.remove('alert');
 
-        // Evaluate Victory Condition
-        if (l1Sanity >= 100 && l2Shield >= 100) {
+        // Check Diagram Equilibrium Completion Target 
+        if (stats.dividend >= 1280 && stats.loyalty >= 610) {
             gameCleared = true;
             isHolding = false;
-            shredderBtn.textContent = "DECENTRALIZED & SECURE";
-            shredderBtn.style.borderColor = "var(--neon-green)";
-            shredderBtn.style.color = "var(--neon-green)";
-            walletPreview.classList.add('active');
-            walletLabel.textContent = "CLAIM COFFEE COUPON";
-            
-            setTimeout(() => {
-                alert("🎉 위기 극복 완료! 시맨틱 데이터가 완벽히 파쇄되어 익명 벡터 큐브로 전환되었습니다. 하이 스코어가 오프라인 커피 할인 QR 쿠폰(ZKP)으로 암호화 변환되었습니다!");
-            }, 100);
+            shredderBtn.textContent = "SYSTEM BALANCED";
+            shredderBtn.style.borderColor = "var(--neon-blue)";
+            shredderBtn.style.color = "var(--neon-blue)";
+            anonymousWallet.classList.add('active');
+            walletLabel.textContent = "ZKP SECURE: 2GP VERIFIED";
+            alert("⚙️ [SYSTEM EQUILIBRIUM REACHED]\n익명 차원 벡터 변환 기술을 통해 최적화 밸런스가 마감되었습니다.\n- L1/L2 지표 위험 해제 완료\n- 플랫폼 국고 시너지 배당 달성: \$1,280\n- 영지식 증명 오프라인 커피 QR 쿠폰이 발급되었습니다!");
         }
     }
 
-    // 3. Render & Update Floating Toxic Plaintext Streams
-    textNodes.forEach((node) => {
-        node.x += node.vx;
-        node.y += node.vy;
+    // 6D. Compute Floating Semantic Plaintext Data Elements
+    rawTextStreams.forEach(stream => {
+        stream.x += stream.vx;
+        stream.y += stream.vy;
+        
+        let pos = toIso(stream.x, stream.y);
 
-        // Boundary Elastic Bounce
-        if (node.x < 10 || node.x > canvas.width - 120) node.vx *= -1;
-        if (node.y < 20 || node.y > canvas.height - 20) node.vy *= -1;
-
-        ctx.fillStyle = 'rgba(255, 51, 102, ' + node.alpha + ')';
-        ctx.font = 'bold 11px monospace';
+        // Display Glowing Raw Toxic Alert Strings
+        ctx.fillStyle = 'var(--neon-red)';
+        ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center';
         ctx.shadowColor = 'var(--neon-red)';
-        ctx.shadowBlur = 4;
-        ctx.fillText(`⚠️ "${node.text}"`, node.x, node.y);
+        ctx.shadowBlur = 5;
+        ctx.fillText(`⚠️ [${stream.text}]`, pos.x, pos.y);
         ctx.shadowBlur = 0;
     });
 
-    // 4. Render & Update Shimmering Vector Cubes
-    vectorCubes.forEach((cube, index) => {
-        cube.y -= cube.speed; // Float upward direction
+    // 6E. Compute High-Dimensional Neon Vector Cube Particles
+    vectorCubes.forEach((cube, idx) => {
+        cube.cx += cube.vx;
+        cube.cy += cube.vy;
+        
         ctx.fillStyle = cube.color;
         ctx.shadowColor = cube.color;
-        ctx.shadowBlur = 6;
-        ctx.fillRect(cube.x, cube.y, cube.size, cube.size);
+        ctx.shadowBlur = 4;
+        ctx.fillRect(cube.cx, cube.cy, cube.size, cube.size);
         ctx.shadowBlur = 0;
 
-        // Garbage collection for offscreen cube instances
-        if (cube.y < 0) {
-            vectorCubes.splice(index, 1);
-        }
+        // Clean memory cycle for out of boundary fragments
+        if (cube.cy < -20) vectorCubes.splice(idx, 1);
     });
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(renderLoop);
 }
 
-// Initialize Execution Loop
-loop();
+// Fire Simulation Initialization Engine
+renderLoop();

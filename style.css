@@ -1,18 +1,20 @@
 :root {
-    --bg-color: #0d1117;
-    --card-bg: #161b22;
+    --bg-color: #0b0f17;
+    --card-bg: #121824;
+    --border-color: #242f41;
     --neon-green: #00ff66;
     --neon-blue: #00e5ff;
+    --neon-orange: #ff9900;
     --neon-red: #ff3366;
-    --text-main: #c9d1d9;
-    --text-muted: #8b949e;
+    --text-main: #e2e8f0;
+    --text-muted: #64748b;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -25,67 +27,92 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    padding: 10px;
 }
 
 /* ==========================================
-   Layer 1: StatusBar (Top Metric Monitor)
+   1. Status Cards Layout (Top UI Matrix)
    ========================================== */
 .status-bar {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    padding: 10px;
-    background: rgba(22, 27, 34, 0.8);
-    border-bottom: 1px solid #30363d;
-    backdrop-filter: blur(10px);
+    gap: 8px;
+    margin-bottom: 10px;
     z-index: 10;
 }
 
 .status-card {
     background: var(--card-bg);
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 6px 8px;
-    text-align: center;
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
 }
 
 .status-card.alert {
     border-color: var(--neon-red);
-    box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
-    animation: pulse 1s infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+    animation: flashBorder 1.5s infinite alternate;
 }
 
-@keyframes pulse {
-    0% { opacity: 0.8; }
-    100% { opacity: 1; }
+@keyframes flashBorder {
+    0% { border-color: var(--border-color); }
+    100% { border-color: var(--neon-red); }
 }
 
-.status-card .layer-title {
-    font-size: 9px;
+.card-header {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 3px;
+    letter-spacing: 0.5px;
+}
+
+.metric-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 8px;
     color: var(--text-muted);
     text-transform: uppercase;
+}
+
+.metric-value {
+    font-size: 15px;
     font-weight: bold;
 }
 
-.status-card .metric {
-    font-size: 13px;
-    font-weight: bold;
-    margin-top: 2px;
-}
-
-.layer-1 .metric { color: var(--neon-red); }
-.layer-2 .metric { color: var(--neon-blue); }
-.layer-3 .metric { color: var(--neon-green); }
+/* Card Specific Accent Colors */
+.layer-1 .v1 { color: var(--neon-orange); }
+.layer-1 .v2 { color: var(--neon-green); }
+.layer-2 .v1 { color: var(--neon-green); }
+.layer-2 .v2 { color: var(--neon-orange); }
+.layer-3 .v1 { color: var(--neon-blue); }
+.layer-3 .v2 { color: var(--neon-green); }
 
 /* ==========================================
-   Layer 2: SimulationCanvas (Center Engine)
+   2. Simulation Canvas (Center Isometric View)
    ========================================== */
 .canvas-container {
     flex: 1;
     position: relative;
-    background: radial-gradient(circle at center, #1f2937 0%, #0d1117 100%);
+    background: radial-gradient(circle at center, #161f30 0%, #0b0f17 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 10px;
 }
 
 canvas {
@@ -96,139 +123,187 @@ canvas {
     height: 100%;
 }
 
-.game-overlay {
+.canvas-overlay-tag {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 11px;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 4px 8px;
+    top: 8px;
+    left: 8px;
+    font-size: 9px;
+    background: rgba(0,0,0,0.6);
+    padding: 3px 6px;
     border-radius: 4px;
+    border: 1px solid var(--border-color);
+    color: var(--neon-blue);
     pointer-events: none;
-    border: 1px solid #30363d;
-    letter-spacing: 0.5px;
 }
 
 /* ==========================================
-   Layer 3: ControlDashboard (Lower Module)
+   3. Control Dashboard (Lower Modular Systems)
    ========================================== */
 .control-dashboard {
-    background: #161b22;
-    border-top: 1px solid #30363d;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     z-index: 10;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
-/* Semantic Shredder Hold Button */
-.shredder-zone {
-    display: flex;
-    justify-content: center;
+/* Main Action Row: Shredder + Hyper Velocity Gauge */
+.action-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 12px;
+    align-items: center;
 }
 
+/* Semantic Shredder Modular Neon Button */
 .shredder-btn {
     width: 100%;
-    max-width: 280px;
-    height: 54px;
-    background: linear-gradient(135deg, #1f2937, #111827);
-    border: 2px solid var(--neon-blue);
-    color: var(--neon-blue);
-    border-radius: 27px;
-    font-size: 15px;
+    height: 64px;
+    background: transparent;
+    border: 2px solid var(--neon-green);
+    color: var(--neon-green);
+    border-radius: 6px;
+    font-size: 16px;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+    box-shadow: inset 0 0 10px rgba(0, 255, 102, 0.1), 0 0 15px rgba(0, 255, 102, 0.1);
     transition: all 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     outline: none;
     touch-action: manipulation;
 }
 
 .shredder-btn:active, .shredder-btn.active {
-    background: var(--neon-blue);
-    color: #000;
-    box-shadow: 0 0 25px var(--neon-blue);
-    transform: scale(0.97);
+    background: rgba(0, 255, 102, 0.15);
+    box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.3), 0 0 25px rgba(0, 255, 102, 0.4);
+    transform: scale(0.98);
 }
 
-/* Bottom Grid: Upgrades & ZKP Wallet */
-.bottom-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 10px;
+/* Energy Gauge Module */
+.energy-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
-.upgrades {
+.gauge-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: conic-gradient(var(--neon-orange) 0% 45%, #1a2333 45% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 10px rgba(255, 153, 0, 0.2);
+}
+
+.gauge-circle::after {
+    content: '';
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    background: var(--card-bg);
+    border-radius: 50%;
+}
+
+.gauge-text {
+    position: absolute;
+    font-size: 8px;
+    font-weight: bold;
+    color: var(--neon-orange);
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Persistent Systems Sub-Grid: Upgrades & ZKP Box */
+.persistent-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1.8fr 1fr;
+    gap: 12px;
+}
+
+/* 3-Divided Upgrade Slots */
+.upgrade-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
 }
 
 .upgrade-slot {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 6px;
+    background: #0b0f17;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px 4px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    font-size: 10px;
+    font-size: 8px;
     color: var(--text-muted);
     text-align: center;
 }
 
-.upgrade-slot strong {
+.upgrade-slot .slot-title {
     color: var(--text-main);
-    font-size: 11px;
-    margin-bottom: 2px;
+    font-size: 9px;
+    font-weight: bold;
+    margin-bottom: 4px;
 }
 
-/* Anonymous Wallet & Dynamic QR Matrix */
-.wallet-preview {
-    background: #0d1117;
+.upgrade-slot .slot-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    margin: 2px 0;
+}
+
+/* Anonymous Wallet Layout with QR Code Preview */
+.anonymous-wallet {
+    background: #0b0f17;
     border: 1px dashed var(--neon-green);
-    border-radius: 6px;
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    padding: 6px;
     position: relative;
 }
 
-.qr-placeholder {
-    width: 42px;
-    height: 42px;
-    background: #fff;
+.qr-container {
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
     padding: 2px;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    opacity: 0.3;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 1px;
+    opacity: 0.2;
     transition: opacity 0.5s ease;
 }
 
 .qr-pixel {
-    width: 6px;
-    height: 6px;
-    background: #000;
+    background: #0b0f17;
 }
 
-.wallet-preview.active .qr-placeholder {
-    opacity: 1;
-    box-shadow: 0 0 10px var(--neon-green);
+.anonymous-wallet.active .qr-container {
+    opacity: 0.9;
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
 }
 
-.wallet-label {
-    font-size: 8px;
+.wallet-footer-label {
+    font-size: 7px;
     color: var(--neon-green);
     margin-top: 4px;
     font-weight: bold;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
 }
