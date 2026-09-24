@@ -1,0 +1,234 @@
+:root {
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --neon-green: #00ff66;
+    --neon-blue: #00e5ff;
+    --neon-red: #ff3366;
+    --text-main: #c9d1d9;
+    --text-muted: #8b949e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================
+   Layer 1: StatusBar (Top Metric Monitor)
+   ========================================== */
+.status-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 10px;
+    background: rgba(22, 27, 34, 0.8);
+    border-bottom: 1px solid #30363d;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.status-card {
+    background: var(--card-bg);
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.status-card.alert {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.status-card .layer-title {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.status-card .metric {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.layer-1 .metric { color: var(--neon-red); }
+.layer-2 .metric { color: var(--neon-blue); }
+.layer-3 .metric { color: var(--neon-green); }
+
+/* ==========================================
+   Layer 2: SimulationCanvas (Center Engine)
+   ========================================== */
+.canvas-container {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, #1f2937 0%, #0d1117 100%);
+    overflow: hidden;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.game-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    border: 1px solid #30363d;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================
+   Layer 3: ControlDashboard (Lower Module)
+   ========================================== */
+.control-dashboard {
+    background: #161b22;
+    border-top: 1px solid #30363d;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+/* Semantic Shredder Hold Button */
+.shredder-zone {
+    display: flex;
+    justify-content: center;
+}
+
+.shredder-btn {
+    width: 100%;
+    max-width: 280px;
+    height: 54px;
+    background: linear-gradient(135deg, #1f2937, #111827);
+    border: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    border-radius: 27px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    touch-action: manipulation;
+}
+
+.shredder-btn:active, .shredder-btn.active {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 25px var(--neon-blue);
+    transform: scale(0.97);
+}
+
+/* Bottom Grid: Upgrades & ZKP Wallet */
+.bottom-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+}
+
+.upgrades {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.upgrade-slot {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.upgrade-slot strong {
+    color: var(--text-main);
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+/* Anonymous Wallet & Dynamic QR Matrix */
+.wallet-preview {
+    background: #0d1117;
+    border: 1px dashed var(--neon-green);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    position: relative;
+}
+
+.qr-placeholder {
+    width: 42px;
+    height: 42px;
+    background: #fff;
+    padding: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+}
+
+.qr-pixel {
+    width: 6px;
+    height: 6px;
+    background: #000;
+}
+
+.wallet-preview.active .qr-placeholder {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--neon-green);
+}
+
+.wallet-label {
+    font-size: 8px;
+    color: var(--neon-green);
+    margin-top: 4px;
+    font-weight: bold;
+}

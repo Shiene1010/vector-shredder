@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+dist/
+build/
+
+# Editor
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Misc
+*.env
+
+# Reference folders
+references/
+refs/
+ReferenceFiles/

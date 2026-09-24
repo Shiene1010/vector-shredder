@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vector Tycoon: The Harmony Grid</title>
+    <!-- 외부로 분리된 스타일시트 연동 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LAYER 1: StatusBar (Top Monitor Component) -->
+    <div class="status-bar">
+        <!-- Local Community Metric (Red Alert Initial State) -->
+        <div class="status-card layer-1 alert" id="card-l1">
+            <div class="layer-title">L1: Local Community</div>
+            <div class="metric" id="metric-l1">Sanity: 24%</div>
+        </div>
+        <!-- Consumer Ecosystem Metric -->
+        <div class="status-card layer-2" id="card-l2">
+            <div class="layer-title">L2: Consumer Eco</div>
+            <div class="metric" id="metric-l2">Shield: 45%</div>
+        </div>
+        <!-- Platform Treasury Metric -->
+        <div class="status-card layer-3" id="card-l3">
+            <div class="layer-title">L3: Treasury</div>
+            <div class="metric" id="metric-l3">+$0.00</div>
+        </div>
+    </div>
+
+    <!-- LAYER 2: SimulationCanvas (Center Isometric Grid Engine) -->
+    <div class="canvas-container">
+        <div class="game-overlay">🚨 SCENARIO: RUSH-HOUR CHAOS</div>
+        <canvas id="simCanvas"></canvas>
+    </div>
+
+    <!-- LAYER 3: ControlDashboard (Lower Tactical Module) -->
+    <div class="control-dashboard">
+        <!-- Tactile Action: Semantic Shredder Hold Mechanism -->
+        <div class="shredder-zone">
+            <button class="shredder-btn" id="shredderBtn">HOLD TO SHRED TEXT</button>
+        </div>
+
+        <!-- Infrastructure & Cryptographic Reward Grid -->
+        <div class="bottom-row">
+            <!-- Tactical Infrastructure Upgrade Slots -->
+            <div class="upgrades">
+                <div class="upgrade-slot">
+                    <strong>Vector Guardrail</strong>
+                    <span>L1 Protection</span>
+                </div>
+                <div class="upgrade-slot">
+                    <strong>ZKP Screener</strong>
+                    <span>L2 Encryption</span>
+                </div>
+            </div>
+            
+            <!-- Anonymous Wallet Module (ZKP Shifting QR Code Preview) -->
+            <div class="wallet-preview" id="walletPreview">
+                <div class="qr-placeholder" id="qrContainer"></div>
+                <div class="wallet-label" id="walletLabel">ZKP SHIFTING</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 외부로 분리된 런타임 게임 스크립트 연동 -->
+    <script src="script.js"></script>
+</body>
+</html>
