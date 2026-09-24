@@ -24,6 +24,10 @@ The project is also deployed via GitHub Pages:
 
 - Live site: https://shiene1010.github.io/vector-shredder/
 
+## Screenshot
+
+![Vector Shredder screenshot](assets/screenshot.png)
+
 ## License
 
 MIT — see LICENSE (not included).
