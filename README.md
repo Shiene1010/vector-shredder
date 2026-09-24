@@ -31,3 +31,7 @@ MIT — see LICENSE (not included).
 ## Notes
 
 - `references/` is ignored via `.gitignore`.
+
+## Onboarding sample
+
+The `references/` folder contains example design and onboarding documents used by the "Vector Tycoon" project. These are included purely as sample tasks to help contributors understand expected deliverables and workflows — for example, the developer onboarding guide `references/🚀 VECTOR TYCOON_ THE HARMONY GRID — 개발자 온보딩 가이드 (Developer Onboarding).md` demonstrates a typical sample task for new team members.
